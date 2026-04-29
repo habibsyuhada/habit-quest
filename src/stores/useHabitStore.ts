@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { db, LocalUserHabit, LocalHabitLog } from '@/lib/local-db'
+import { db, LocalUserHabit, LocalHabitLog, getLogDateString } from '@/lib/local-db'
 
 interface HabitState {
   habits: LocalUserHabit[]
@@ -94,7 +94,7 @@ export const useHabitStore = create<HabitState>()(
           if (!habit) return
 
           const existingLog = await db.habit_logs
-            .where('[habitId+date]')
+            .where('[habitId+completedDate]')
             .equals([habitId, date])
             .first()
 
@@ -104,9 +104,12 @@ export const useHabitStore = create<HabitState>()(
             id: crypto.randomUUID(),
             userId: habit.userId,
             habitId,
+            optionId: null,
             completedAt: new Date().toISOString(),
-            xp: habit.xp,
-            date,
+            completedDate: date,
+            value: 1,
+            expEarned: habit.xp,
+            note: null,
             createdAt: new Date().toISOString(),
           }
 
@@ -132,7 +135,7 @@ export const useHabitStore = create<HabitState>()(
       uncompleteHabit: async (habitId, date) => {
         try {
           await db.habit_logs
-            .where('[habitId+date]')
+            .where('[habitId+completedDate]')
             .equals([habitId, date])
             .delete()
 
@@ -156,15 +159,13 @@ export const useHabitStore = create<HabitState>()(
 
       isHabitCompleted: (habitId, date) => {
         const { logs } = get()
-        return logs.some(
-          (log) => log.habitId === habitId && log.date === date
-        )
+        return logs.some((log) => log.habitId === habitId && getLogDateString(log) === date)
       },
 
       getTodayCompletedHabits: () => {
         const { logs } = get()
         const today = new Date().toISOString().split('T')[0]
-        return logs.filter((log) => log.date === today)
+        return logs.filter((log) => getLogDateString(log) === today)
       },
     }),
     {

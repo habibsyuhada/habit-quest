@@ -2,14 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { startTemplateSchema } from '@/lib/validators'
-import { z } from 'zod'
-
-const createCustomHabitSchema = z.object({
-  title: z.string().min(1).max(200),
-  description: z.string().max(500).optional(),
-  xp: z.number().int().positive().default(10),
-})
+import { startTemplateSchema, createHabitSchema } from '@/lib/validators'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,6 +28,17 @@ export async function GET(request: NextRequest) {
       where: {
         userId: session.user.id,
         isActive: true,
+      },
+      include: {
+        categoryAssignments: {
+          include: {
+            category: true,
+          },
+        },
+        options: {
+          where: { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+        },
       },
       orderBy: { order: 'asc' },
     })
@@ -79,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     // Check if it's a custom habit creation
     if (body.title && !body.templateId) {
-      const validationResult = createCustomHabitSchema.safeParse(body)
+      const validationResult = createHabitSchema.safeParse(body)
 
       if (!validationResult.success) {
         return NextResponse.json(
@@ -113,8 +117,37 @@ export async function POST(request: NextRequest) {
           description: validationResult.data.description,
           xp: validationResult.data.xp,
           order: nextOrder,
+          recurrenceType: validationResult.data.recurrenceType,
+          targetCount: validationResult.data.targetCount,
+          allowMultipleCompletions: validationResult.data.allowMultipleCompletions,
           sourceTemplateId: null,
           sourceTemplateVersion: null,
+          categoryAssignments: validationResult.data.categoryIds && validationResult.data.categoryIds.length > 0
+            ? {
+                create: validationResult.data.categoryIds.map((categoryId) => ({
+                  categoryId,
+                })),
+              }
+            : undefined,
+          options: validationResult.data.options
+            ? {
+                create: validationResult.data.options.map((option) => ({
+                  label: option.label,
+                  description: option.description,
+                  exp: option.exp,
+                  sortOrder: option.sortOrder,
+                  isActive: option.isActive ?? true,
+                })),
+              }
+            : undefined,
+        },
+        include: {
+          categoryAssignments: {
+            include: {
+              category: true,
+            },
+          },
+          options: true,
         },
       })
 
@@ -219,6 +252,13 @@ export async function POST(request: NextRequest) {
             order: item.order,
             sourceTemplateId: template.id,
             sourceTemplateVersion: template.version,
+          },
+          include: {
+            categoryAssignments: {
+              include: {
+                category: true,
+              },
+            },
           },
         })
       )

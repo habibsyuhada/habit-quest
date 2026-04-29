@@ -41,6 +41,31 @@ export interface LocalUserHabit {
   isActive: boolean
   sourceTemplateId: string | null
   sourceTemplateVersion: string | null
+  recurrenceType: string
+  targetCount: number
+  allowMultipleCompletions: boolean
+  createdAt: string
+  updatedAt: string
+  categoryAssignments?: LocalHabitCategoryAssignment[]
+  options?: LocalHabitOption[]
+}
+
+export interface LocalHabitCategoryAssignment {
+  id: string
+  habitId: string
+  categoryId: string
+  createdAt: string
+  category?: any
+}
+
+export interface LocalHabitOption {
+  id: string
+  habitId: string
+  label: string
+  description: string | null
+  exp: number | null
+  sortOrder: number
+  isActive: boolean
   createdAt: string
   updatedAt: string
 }
@@ -49,10 +74,14 @@ export interface LocalHabitLog {
   id: string
   userId: string
   habitId: string
+  optionId: string | null
   completedAt: string
-  xp: number
-  date: string
+  completedDate: string
+  value: number
+  expEarned: number
+  note: string | null
   createdAt: string
+  option?: LocalHabitOption
 }
 
 export interface LocalUserProgress {
@@ -99,6 +128,7 @@ export class HabitQuestDB extends Dexie {
   templates!: Table<LocalTemplate>
   template_items!: Table<LocalTemplateItem>
   user_habits!: Table<LocalUserHabit>
+  habit_options!: Table<LocalHabitOption>
   habit_logs!: Table<LocalHabitLog>
   user_progress!: Table<LocalUserProgress>
   sync_queue!: Table<LocalSyncQueueItem>
@@ -111,8 +141,9 @@ export class HabitQuestDB extends Dexie {
     this.version(LOCAL_DB_SCHEMA_VERSION).stores({
       templates: 'id, slug, category, isPremium, version, updatedAt',
       template_items: 'id, templateId, order, version, updatedAt',
-      user_habits: 'id, userId, isActive, sourceTemplateId, updatedAt',
-      habit_logs: 'id, userId, habitId, date, [habitId+date], completedAt',
+      user_habits: 'id, userId, isActive, sourceTemplateId, categoryId, updatedAt',
+      habit_options: 'id, habitId, sortOrder, isActive',
+      habit_logs: 'id, userId, habitId, optionId, completedDate, [habitId+completedDate], [habitId+optionId+completedDate], completedAt',
       user_progress: 'id, userId, updatedAt',
       sync_queue: '++id, clientEventId, eventType, retryCount, createdAt',
       settings: 'id',
@@ -122,8 +153,9 @@ export class HabitQuestDB extends Dexie {
     this.version(2).stores({
       templates: 'id, slug, category, isPremium, version, updatedAt',
       template_items: 'id, templateId, order, version, updatedAt',
-      user_habits: 'id, userId, isActive, sourceTemplateId, updatedAt',
-      habit_logs: 'id, userId, habitId, date, [habitId+date], completedAt',
+      user_habits: 'id, userId, isActive, sourceTemplateId, categoryId, updatedAt',
+      habit_options: 'id, habitId, sortOrder, isActive',
+      habit_logs: 'id, userId, habitId, optionId, completedDate, [habitId+completedDate], [habitId+optionId+completedDate], completedAt',
       user_progress: 'id, userId, updatedAt',
       sync_queue: '++id, clientEventId, eventType, retryCount, createdAt',
       settings: 'id',
@@ -197,4 +229,10 @@ export async function updateAppMeta(updates: Partial<LocalAppMeta>) {
   if (appMeta) {
     await db.app_meta.update('app_meta', updates)
   }
+}
+
+// Helper function to safely get date string from log (handles both old and new formats)
+export function getLogDateString(log: LocalHabitLog): string {
+  const dateStr = log.completedDate || (log as any).date || ''
+  return typeof dateStr === 'string' ? dateStr : new Date(dateStr).toISOString()
 }

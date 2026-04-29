@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
               where: {
                 habitId,
                 userId,
-                date: {
+                completedDate: {
                   gte: startOfDate,
                   lte: endOfDate,
                 },
@@ -122,15 +122,16 @@ export async function POST(request: NextRequest) {
                   userId,
                   habitId,
                   completedAt: new Date(event.client_created_at),
-                  xp: habit.xp,
-                  date: habitDate,
+                  completedDate: habitDate,
+                  value: 1,
+                  expEarned: habit.xp,
                 },
               })
 
               const todayLogs = await prisma.habitLog.findMany({
                 where: {
                   userId,
-                  date: {
+                  completedDate: {
                     gte: startOfDate,
                     lte: endOfDate,
                   },
@@ -173,7 +174,7 @@ export async function POST(request: NextRequest) {
               where: {
                 habitId,
                 userId,
-                date: {
+                completedDate: {
                   gte: startOfDate,
                   lte: endOfDate,
                 },
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest) {
               const remainingLogs = await prisma.habitLog.findMany({
                 where: {
                   userId,
-                  date: {
+                  completedDate: {
                     gte: startOfDate,
                     lte: endOfDate,
                   },
@@ -207,8 +208,8 @@ export async function POST(request: NextRequest) {
               userProgress = await prisma.userProgress.update({
                 where: { id: userProgress.id },
                 data: {
-                  totalXp: { decrement: log.xp },
-                  currentLevel: Math.max(1, Math.floor((userProgress.totalXp - log.xp) / 100) + 1),
+                  totalXp: { decrement: log.expEarned },
+                  currentLevel: Math.max(1, Math.floor((userProgress.totalXp - log.expEarned) / 100) + 1),
                 },
               })
             }

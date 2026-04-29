@@ -70,10 +70,56 @@ export async function PATCH(
     if (validationResult.data.description !== undefined) updateData.description = validationResult.data.description
     if (validationResult.data.xp !== undefined) updateData.xp = validationResult.data.xp
     if (validationResult.data.order !== undefined) updateData.order = validationResult.data.order
+    if (validationResult.data.recurrenceType !== undefined) updateData.recurrenceType = validationResult.data.recurrenceType
+    if (validationResult.data.targetCount !== undefined) updateData.targetCount = validationResult.data.targetCount
+    if (validationResult.data.allowMultipleCompletions !== undefined) updateData.allowMultipleCompletions = validationResult.data.allowMultipleCompletions
+
+    // Handle categories update - delete existing and create new ones
+    if (validationResult.data.categoryIds !== undefined) {
+      await prisma.habitCategoryAssignment.deleteMany({
+        where: { habitId: id },
+      })
+
+      if (validationResult.data.categoryIds.length > 0) {
+        updateData.categoryAssignments = {
+          create: validationResult.data.categoryIds.map((categoryId) => ({
+            categoryId,
+          })),
+        }
+      }
+    }
+
+    // Handle options update - delete existing and create new ones
+    if (validationResult.data.options !== undefined) {
+      await prisma.habitOption.deleteMany({
+        where: { habitId: id },
+      })
+
+      updateData.options = {
+        create: validationResult.data.options.map((option) => ({
+          label: option.label,
+          description: option.description,
+          exp: option.exp,
+          sortOrder: option.sortOrder,
+          isActive: option.isActive ?? true,
+        })),
+      }
+    }
 
     const updatedHabit = await prisma.userHabit.update({
       where: { id: id },
       data: updateData,
+      include: {
+        categoryAssignments: {
+          include: {
+            category: true,
+          },
+        },
+        options: {
+          where: { isActive: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
     })
 
     return NextResponse.json({

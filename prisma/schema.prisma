@@ -108,42 +108,101 @@ model HabitTemplateItem {
 }
 
 model UserHabit {
-  id                    String    @id @default(cuid())
-  userId                String
-  title                 String
-  description           String?
-  xp                    Int       @default(10)
-  order                 Int
-  isActive              Boolean   @default(true)
-  sourceTemplateId      String?
-  sourceTemplateVersion String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  id                        String    @id @default(cuid())
+  userId                    String
+  title                     String
+  description               String?
+  xp                        Int       @default(10)
+  order                     Int
+  isActive                  Boolean   @default(true)
+  sourceTemplateId          String?
+  sourceTemplateVersion     String?
+  recurrenceType            String    @default("DAILY")
+  targetCount               Int       @default(1)
+  allowMultipleCompletions  Boolean   @default(false)
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   logs          HabitLog[]
+  categoryAssignments HabitCategoryAssignment[]
+  options       HabitOption[]
 
   @@index([userId, isActive])
   @@index([sourceTemplateId])
+  @@index([recurrenceType])
   @@map("user_habits")
 }
 
 model HabitLog {
-  id          String    @id @default(cuid())
-  userId      String
-  habitId     String
-  completedAt DateTime  @default(now())
-  xp          Int
-  date        DateTime  @default(now())
-  createdAt   DateTime  @default(now())
+  id            String    @id @default(cuid())
+  userId        String
+  habitId       String
+  optionId      String?
+  completedAt   DateTime  @default(now())
+  completedDate DateTime
+  value         Int       @default(1)
+  expEarned     Int
+  note          String?
+  createdAt     DateTime  @default(now())
 
-  user  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  habit UserHabit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit  UserHabit   @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  option HabitOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
 
-  @@unique([habitId, date])
-  @@index([userId, date])
-  @@index([habitId])
+  @@index([habitId, completedDate])
+  @@index([userId, completedDate])
+  @@index([habitId, optionId, completedDate])
   @@map("habit_logs")
+}
+
+model HabitCategoryAssignment {
+  id         String   @id @default(cuid())
+  habitId    String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  habit UserHabit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  category HabitCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, categoryId])
+  @@index([habitId])
+  @@index([categoryId])
+  @@map("habit_category_assignments")
+}
+
+model HabitCategory {
+  id         String    @id @default(cuid())
+  userId     String?
+  name       String
+  color      String
+  icon       String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  habitAssignments HabitCategoryAssignment[]
+
+  @@index([userId])
+  @@map("habit_categories")
+}
+
+model HabitOption {
+  id          String    @id @default(cuid())
+  habitId     String
+  label       String
+  description String?
+  exp         Int?
+  sortOrder   Int
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  habit UserHabit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  logs  HabitLog[]
+
+  @@index([habitId])
+  @@index([habitId, sortOrder])
+  @@map("habit_options")
 }
 
 model UserProgress {

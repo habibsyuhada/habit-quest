@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Calendar as CalendarIcon, Check, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { format, subDays, isSameDay, parseISO } from 'date-fns'
-import { db, LocalUserHabit, LocalHabitLog } from '@/lib/local-db'
+import { db, LocalUserHabit, LocalHabitLog, getLogDateString } from '@/lib/local-db'
 import { cn } from '@/lib/utils'
 
 interface BackfillDialogProps {
@@ -45,7 +45,7 @@ export function BackfillDialog({
       .equals(habit.id)
       .toArray()
 
-    const completed = new Set(logs.map((log) => log.date.split('T')[0]))
+    const completed = new Set(logs.map((log) => getLogDateString(log).split('T')[0]))
     setCompletedDates(completed)
   }
 
@@ -64,7 +64,7 @@ export function BackfillDialog({
 
         // Remove from IndexedDB
         await db.habit_logs
-          .where('[habitId+date]')
+          .where('[habitId+completedDate]')
           .equals([habit.id, dateStr])
           .delete()
 
@@ -90,9 +90,12 @@ export function BackfillDialog({
           id: crypto.randomUUID(),
           userId: habit.userId,
           habitId: habit.id,
+          optionId: null,
           completedAt: new Date().toISOString(),
-          xp: habit.xp,
-          date: dateStr,
+          completedDate: dateStr,
+          value: 1,
+          expEarned: habit.xp,
+          note: null,
           createdAt: new Date().toISOString(),
         })
 

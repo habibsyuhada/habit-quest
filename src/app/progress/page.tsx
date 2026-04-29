@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { LifeMap } from '@/components/progress/LifeMap'
-import { db, LocalHabitLog, LocalUserHabit } from '@/lib/local-db'
+import { db, LocalHabitLog, LocalUserHabit, getLogDateString } from '@/lib/local-db'
 import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { Trophy, Target, Flame, Award } from 'lucide-react'
@@ -49,7 +49,7 @@ export default function ProgressPage() {
 
     const completedDates = new Set<string>()
     logs.forEach((log) => {
-      completedDates.add(log.date.split('T')[0])
+      completedDates.add(getLogDateString(log).split('T')[0])
     })
 
     const completedDaysArray = Array.from(completedDates)

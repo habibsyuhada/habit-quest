@@ -12,7 +12,7 @@ import { CustomHabitDialog, AddHabitButton } from '@/components/habit/CustomHabi
 import { BackfillDialog } from '@/components/habit/BackfillDialog'
 import { useHabitStore } from '@/stores/useHabitStore'
 import { useUserStore } from '@/stores/useUserStore'
-import { db, LocalUserHabit, LocalHabitLog } from '@/lib/local-db'
+import { db, LocalUserHabit, LocalHabitLog, getLogDateString } from '@/lib/local-db'
 import { getTodayDate, getGreeting } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Sparkles, Target } from 'lucide-react'
@@ -52,7 +52,7 @@ export default function DashboardPage() {
       .toArray()
 
     setActiveHabits(allHabits)
-    setTodayLogs(allLogs.filter((log) => log.date.startsWith(today)))
+    setTodayLogs(allLogs.filter((log) => getLogDateString(log).startsWith(today)))
   }
 
   const handleComplete = async (habitId: string) => {
@@ -66,9 +66,12 @@ export default function DashboardPage() {
       id: crypto.randomUUID(),
       userId: habit.userId,
       habitId,
+      optionId: null,
       completedAt: new Date().toISOString(),
-      xp: habit.xp,
-      date: today,
+      completedDate: today,
+      value: 1,
+      expEarned: habit.xp,
+      note: null,
       createdAt: new Date().toISOString(),
     })
 
@@ -92,7 +95,7 @@ export default function DashboardPage() {
     if (!habit) return
 
     await db.habit_logs
-      .where('[habitId+date]')
+      .where('[habitId+completedDate]')
       .equals([habitId, today])
       .delete()
 
