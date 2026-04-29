@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  userHabits    UserHabit[]
+  habitLogs     HabitLog[]
+  userProgress  UserProgress[]
+  syncEvents    SyncEvent[]
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model HabitTemplate {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  category      String
+  description   String   @db.Text
+  durationDays  Int      @default(30)
+  isPremium     Boolean  @default(false)
+  difficulty    String   @default("beginner")
+  xpPerHabit    Int      @default(10)
+  coverGradient String?
+  version       String   @default("1.0.0")
+  changelog     String?  @db.Text
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  items         HabitTemplateItem[]
+
+  @@map("habit_templates")
+}
+
+model HabitTemplateItem {
+  id          String   @id @default(cuid())
+  templateId  String
+  title       String
+  description String?
+  order       Int
+  xp          Int      @default(10)
+  version     String   @default("1.0.0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  template    HabitTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, order])
+  @@index([templateId])
+  @@map("habit_template_items")
+}
+
+model UserHabit {
+  id                    String    @id @default(cuid())
+  userId                String
+  title                 String
+  description           String?
+  xp                    Int       @default(10)
+  order                 Int
+  isActive              Boolean   @default(true)
+  sourceTemplateId      String?
+  sourceTemplateVersion String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs          HabitLog[]
+
+  @@index([userId, isActive])
+  @@index([sourceTemplateId])
+  @@map("user_habits")
+}
+
+model HabitLog {
+  id          String    @id @default(cuid())
+  userId      String
+  habitId     String
+  completedAt DateTime  @default(now())
+  xp          Int
+  date        DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+
+  user  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habit UserHabit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([userId, date])
+  @@index([habitId])
+  @@map("habit_logs")
+}
+
+model UserProgress {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  totalXp         Int       @default(0)
+  currentLevel    Int       @default(1)
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  recoveryTokens  Int       @default(3)
+  lastActivityAt  DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_progress")
+}
+
+model SyncEvent {
+  id              String   @id @default(cuid())
+  userId          String
+  clientEventId   String   @unique
+  eventType       String
+  eventVersion    Int      @default(1)
+  payload         Json
+  processedAt     DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, clientEventId])
+  @@index([userId, createdAt])
+  @@map("sync_events")
+}
+
+model Subscription {
+  id              String    @id @default(cuid())
+  userId          String
+  status          String    @default("inactive")
+  plan            String?
+  startDate       DateTime?
+  endDate         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("subscriptions")
+}
