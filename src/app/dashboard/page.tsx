@@ -8,6 +8,8 @@ import { HabitCard } from '@/components/habit/HabitCard'
 import { ProgressRing } from '@/components/habit/ProgressRing'
 import { XPBar } from '@/components/habit/XPBar'
 import { StreakFlame } from '@/components/habit/StreakFlame'
+import { CustomHabitDialog, AddHabitButton } from '@/components/habit/CustomHabitDialog'
+import { BackfillDialog } from '@/components/habit/BackfillDialog'
 import { useHabitStore } from '@/stores/useHabitStore'
 import { useUserStore } from '@/stores/useUserStore'
 import { db, LocalUserHabit, LocalHabitLog } from '@/lib/local-db'
@@ -18,10 +20,13 @@ import { Sparkles, Target } from 'lucide-react'
 export default function DashboardPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const { habits, logs, fetchHabits, fetchLogs, completeHabit, uncompleteHabit, isHabitCompleted } = useHabitStore()
-  const { progress, fetchProgress } = useUserStore()
+  const { fetchHabits, fetchLogs, fetchProgress } = useHabitStore()
+  const { progress } = useUserStore()
   const [activeHabits, setActiveHabits] = useState<LocalUserHabit[]>([])
   const [todayLogs, setTodayLogs] = useState<LocalHabitLog[]>([])
+  const [selectedHabit, setSelectedHabit] = useState<LocalUserHabit | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isBackfillDialogOpen, setIsBackfillDialogOpen] = useState(false)
 
   useEffect(() => {
     if (session?.user) {
@@ -52,14 +57,82 @@ export default function DashboardPage() {
 
   const handleComplete = async (habitId: string) => {
     const today = new Date().toISOString()
-    await completeHabit(habitId, today)
+
+    // Optimistic update
+    const habit = activeHabits.find(h => h.id === habitId)
+    if (!habit) return
+
+    await db.habit_logs.put({
+      id: crypto.randomUUID(),
+      userId: habit.userId,
+      habitId,
+      completedAt: new Date().toISOString(),
+      xp: habit.xp,
+      date: today,
+      createdAt: new Date().toISOString(),
+    })
+
+    // Sync to server
+    const { addToSyncQueue } = await import('@/lib/sync-utils')
+    await addToSyncQueue({
+      client_event_id: crypto.randomUUID(),
+      event_type: 'HABIT_COMPLETED',
+      event_version: 1,
+      client_created_at: new Date().toISOString(),
+      payload: { habitId, date: today, xp: habit.xp },
+    })
+
     await loadData()
   }
 
   const handleUncomplete = async (habitId: string) => {
     const today = new Date().toISOString()
-    await uncompleteHabit(habitId, today)
+
+    const habit = activeHabits.find(h => h.id === habitId)
+    if (!habit) return
+
+    await db.habit_logs
+      .where('[habitId+date]')
+      .equals([habitId, today.split('T')[0]])
+      .delete()
+
+    // Sync to server
+    const { addToSyncQueue } = await import('@/lib/sync-utils')
+    await addToSyncQueue({
+      client_event_id: crypto.randomUUID(),
+      event_type: 'HABIT_UNCOMPLETED',
+      event_version: 1,
+      client_created_at: new Date().toISOString(),
+      payload: { habitId, date: today },
+    })
+
     await loadData()
+  }
+
+  const handleEdit = (habit: LocalUserHabit) => {
+    setSelectedHabit(habit)
+    setIsEditDialogOpen(true)
+  }
+
+  const handleDelete = async (habitId: string) => {
+    if (!confirm('Are you sure you want to delete this habit?')) return
+
+    try {
+      await fetch(`/api/habits/${habitId}`, {
+        method: 'DELETE',
+      })
+
+      await db.user_habits.delete(habitId)
+      await loadData()
+    } catch (error) {
+      console.error('Failed to delete habit:', error)
+      alert('Failed to delete habit. Please try again.')
+    }
+  }
+
+  const handleBackfill = (habit: LocalUserHabit) => {
+    setSelectedHabit(habit)
+    setIsBackfillDialogOpen(true)
   }
 
   const todayCompletedCount = activeHabits.filter((habit) =>
@@ -190,23 +263,51 @@ export default function DashboardPage() {
         ) : null}
 
         <div className="space-y-3">
-          <h2 className="text-xl font-bold text-gray-900">Today's Habits</h2>
-          {activeHabits.map((habit, index) => {
-            const isCompleted = todayLogs.some((log) => log.habitId === habit.id)
+          <AddHabitButton onHabitCreated={loadData} />
 
-            return (
-              <HabitCard
-                key={habit.id}
-                title={habit.title}
-                description={habit.description}
-                xp={habit.xp}
-                isCompleted={isCompleted}
-                onComplete={() => handleComplete(habit.id)}
-                onUncomplete={() => handleUncomplete(habit.id)}
-              />
-            )
-          })}
+          {activeHabits.length > 0 && (
+            <h2 className="text-xl font-bold text-gray-900">Today's Habits</h2>
+          )}
+
+          <div className="space-y-3">
+            {activeHabits.map((habit) => {
+              const isCompleted = todayLogs.some((log) => log.habitId === habit.id)
+
+              return (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  isCompleted={isCompleted}
+                  onComplete={() => handleComplete(habit.id)}
+                  onUncomplete={() => handleUncomplete(habit.id)}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onBackfill={handleBackfill}
+                />
+              )
+            })}
+          </div>
         </div>
+
+        <CustomHabitDialog
+          isOpen={isEditDialogOpen}
+          onClose={() => {
+            setIsEditDialogOpen(false)
+            setSelectedHabit(null)
+          }}
+          habit={selectedHabit}
+          onSuccess={loadData}
+        />
+
+        <BackfillDialog
+          isOpen={isBackfillDialogOpen}
+          onClose={() => {
+            setIsBackfillDialogOpen(false)
+            setSelectedHabit(null)
+          }}
+          habit={selectedHabit}
+          onSuccess={loadData}
+        />
       </div>
     </AppShell>
   )
