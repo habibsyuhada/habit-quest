@@ -20,8 +20,8 @@ import { Sparkles, Target } from 'lucide-react'
 export default function DashboardPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const { fetchHabits, fetchLogs, fetchProgress } = useHabitStore()
-  const { progress } = useUserStore()
+  const { fetchHabits, fetchLogs } = useHabitStore()
+  const { progress, fetchProgress } = useUserStore()
   const [activeHabits, setActiveHabits] = useState<LocalUserHabit[]>([])
   const [todayLogs, setTodayLogs] = useState<LocalHabitLog[]>([])
   const [selectedHabit, setSelectedHabit] = useState<LocalUserHabit | null>(null)
@@ -56,7 +56,7 @@ export default function DashboardPage() {
   }
 
   const handleComplete = async (habitId: string) => {
-    const today = new Date().toISOString()
+    const today = getTodayDate()
 
     // Optimistic update
     const habit = activeHabits.find(h => h.id === habitId)
@@ -86,14 +86,14 @@ export default function DashboardPage() {
   }
 
   const handleUncomplete = async (habitId: string) => {
-    const today = new Date().toISOString()
+    const today = getTodayDate()
 
     const habit = activeHabits.find(h => h.id === habitId)
     if (!habit) return
 
     await db.habit_logs
       .where('[habitId+date]')
-      .equals([habitId, today.split('T')[0]])
+      .equals([habitId, today])
       .delete()
 
     // Sync to server
@@ -138,8 +138,6 @@ export default function DashboardPage() {
   const todayCompletedCount = activeHabits.filter((habit) =>
     todayLogs.some((log) => log.habitId === habit.id)
   ).length
-
-  const todayProgress = activeHabits.length > 0 ? (todayCompletedCount / activeHabits.length) * 100 : 0
 
   if (activeHabits.length === 0) {
     return (
@@ -262,7 +260,7 @@ export default function DashboardPage() {
           </motion.div>
         ) : null}
 
-        <div className="space-y-3">
+        <div className="space-y-3 pb-24">
           <AddHabitButton onHabitCreated={loadData} />
 
           {activeHabits.length > 0 && (
@@ -270,20 +268,21 @@ export default function DashboardPage() {
           )}
 
           <div className="space-y-3">
-            {activeHabits.map((habit) => {
+            {activeHabits.map((habit, index) => {
               const isCompleted = todayLogs.some((log) => log.habitId === habit.id)
 
               return (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  isCompleted={isCompleted}
-                  onComplete={() => handleComplete(habit.id)}
-                  onUncomplete={() => handleUncomplete(habit.id)}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onBackfill={handleBackfill}
-                />
+                <div key={habit.id} className={index === activeHabits.length - 1 ? 'mb-16' : ''}>
+                  <HabitCard
+                    habit={habit}
+                    isCompleted={isCompleted}
+                    onComplete={() => handleComplete(habit.id)}
+                    onUncomplete={() => handleUncomplete(habit.id)}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onBackfill={handleBackfill}
+                  />
+                </div>
               )
             })}
           </div>

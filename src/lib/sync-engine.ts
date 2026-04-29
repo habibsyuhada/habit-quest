@@ -153,7 +153,25 @@ export class SyncEngine {
         const { data } = result
 
         if (data.templates?.length > 0) {
-          await db.templates.bulkPut(data.templates)
+          // Extract and store template items separately
+          const allItems = data.templates.flatMap((template: any) =>
+            template.items.map((item: any) => ({
+              ...item,
+              templateId: template.id,
+            }))
+          )
+
+          if (allItems.length > 0) {
+            await db.template_items.bulkPut(allItems)
+          }
+
+          // Remove items from templates before storing
+          const templatesWithoutItems = data.templates.map((template: any) => {
+            const { items, ...templateData } = template
+            return templateData
+          })
+
+          await db.templates.bulkPut(templatesWithoutItems)
         }
 
         if (data.user_habits?.length > 0) {

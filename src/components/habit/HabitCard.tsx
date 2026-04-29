@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { Check, ChevronRight, MoreVertical, Pencil, Trash2, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { LocalUserHabit } from '@/lib/local-db'
 
 interface HabitCardProps {
@@ -29,6 +29,7 @@ export function HabitCard({
 }: HabitCardProps) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const handleClick = () => {
     if (isCompleted) {
@@ -40,18 +41,37 @@ export function HabitCard({
     }
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false)
+      }
+    }
+
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMenu])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileTap={{ scale: 0.98 }}
-      className="relative"
+      className={cn(
+        'relative',
+        showMenu && 'z-[100]'
+      )}
+      onClick={handleClick}
     >
-      <button
-        onClick={handleClick}
+      <div
         className={cn(
-          'w-full rounded-3xl p-4 text-left transition-all',
+          'w-full rounded-3xl p-4 text-left transition-all cursor-pointer',
           isCompleted
             ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
             : 'bg-white/80 backdrop-blur-sm text-gray-900 shadow-md hover:shadow-lg'
@@ -111,7 +131,7 @@ export function HabitCard({
           </div>
 
           {showActions && (
-            <div className="relative">
+            <div className="relative" ref={menuRef}>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -134,7 +154,9 @@ export function HabitCard({
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="absolute right-0 top-12 z-10 w-48 rounded-2xl bg-white shadow-xl border border-gray-200 py-2"
+                  className="absolute right-0 top-12 z-[100] w-48 rounded-2xl bg-white shadow-xl border border-gray-200 py-2"
+                  onClick={(e) => e.stopPropagation()}
+                  style={{ bottom: 'auto' }}
                 >
                   <button
                     onClick={(e) => {
@@ -176,7 +198,7 @@ export function HabitCard({
             </div>
           )}
         </div>
-      </button>
+      </div>
     </motion.div>
   )
 }

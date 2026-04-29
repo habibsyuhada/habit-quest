@@ -29,7 +29,23 @@ export default function TemplateDetailPage() {
 
       if (localTemplate) {
         setTemplate(localTemplate)
-        const templateItems = await db.template_items.where('templateId').equals(localTemplate.id).toArray()
+        let templateItems = await db.template_items.where('templateId').equals(localTemplate.id).toArray()
+
+        console.log('Template ID:', localTemplate.id)
+        console.log('Template Items from DB:', templateItems)
+
+        // If no items found, force sync
+        if (templateItems.length === 0) {
+          console.log('No items found, forcing sync...')
+          const { getSyncEngine } = await import('@/lib/sync-engine')
+          const syncEngine = getSyncEngine()
+          await syncEngine.forceSync()
+
+          // Try loading items again after sync
+          templateItems = await db.template_items.where('templateId').equals(localTemplate.id).toArray()
+          console.log('Template Items after sync:', templateItems)
+        }
+
         setItems(templateItems)
       }
     } catch (error) {

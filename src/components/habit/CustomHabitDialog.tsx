@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,24 @@ export function CustomHabitDialog({
     xp: habit?.xp || 10,
   })
 
+  // Reset form when habit changes
+  useEffect(() => {
+    if (habit) {
+      setFormData({
+        title: habit.title || '',
+        description: habit.description || '',
+        xp: habit.xp || 10,
+      })
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        xp: 10,
+      })
+    }
+    setError('')
+  }, [habit, isOpen])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -48,7 +66,7 @@ export function CustomHabitDialog({
           // Update local IndexedDB
           await db.user_habits.update(habit.id, {
             title: formData.title,
-            description: formData.description,
+            description: formData.description || null,
             xp: formData.xp,
             updatedAt: new Date().toISOString(),
           })
@@ -74,7 +92,7 @@ export function CustomHabitDialog({
             id: result.data.id,
             userId: result.data.userId,
             title: result.data.title,
-            description: result.data.description,
+            description: result.data.description || null,
             xp: result.data.xp,
             order: result.data.order,
             isActive: result.data.isActive,
@@ -106,10 +124,10 @@ export function CustomHabitDialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
           />
 
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -157,7 +175,7 @@ export function CustomHabitDialog({
                       placeholder="What do you want to achieve?"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="flex min-h-[80px] w-full rounded-2xl border border-gray-300 bg-gray-50/50 px-4 py-3 text-sm transition-all focus:border-blue-500 focus:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20"
+                      className="flex min-h-[80px] w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 transition-all focus:border-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/20"
                       rows={3}
                     />
                   </div>

@@ -31,9 +31,8 @@ export const startTemplateSchema = z.object({
 })
 
 export const updateHabitSchema = z.object({
-  habitId: z.string().cuid(),
   title: z.string().min(1).max(200).optional(),
-  description: z.string().max(500).optional(),
+  description: z.string().max(500).nullable().optional(),
   xp: z.number().int().positive().optional(),
   order: z.number().int().nonnegative().optional(),
 })

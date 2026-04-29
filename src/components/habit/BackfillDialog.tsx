@@ -6,6 +6,7 @@ import { X, Calendar as CalendarIcon, Check, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { format, subDays, isSameDay, parseISO } from 'date-fns'
 import { db, LocalUserHabit, LocalHabitLog } from '@/lib/local-db'
+import { cn } from '@/lib/utils'
 
 interface BackfillDialogProps {
   isOpen: boolean
@@ -54,52 +55,68 @@ export function BackfillDialog({
     const dateStr = format(date, 'yyyy-MM-dd')
     const newCompletedDates = new Set(completedDates)
 
-    if (newCompletedDates.has(dateStr)) {
-      // Uncomplete
-      newCompletedDates.delete(dateStr)
+    setIsLoading(true)
 
-      // Remove from IndexedDB
-      await db.habit_logs
-        .where('[habitId+date]')
-        .equals([habit.id, dateStr])
-        .delete()
+    try {
+      if (newCompletedDates.has(dateStr)) {
+        // Uncomplete
+        newCompletedDates.delete(dateStr)
 
-      // Sync to server
-      const { addToSyncQueue } = await import('@/lib/sync-utils')
-      await addToSyncQueue({
-        client_event_id: crypto.randomUUID(),
-        event_type: 'HABIT_UNCOMPLETED',
-        event_version: 1,
-        client_created_at: new Date().toISOString(),
-        payload: { habitId: habit.id, date: dateStr },
-      })
-    } else {
-      // Complete
-      newCompletedDates.add(dateStr)
+        // Remove from IndexedDB
+        await db.habit_logs
+          .where('[habitId+date]')
+          .equals([habit.id, dateStr])
+          .delete()
 
-      // Add to IndexedDB
-      await db.habit_logs.put({
-        id: crypto.randomUUID(),
-        userId: habit.userId,
-        habitId: habit.id,
-        completedAt: new Date().toISOString(),
-        xp: habit.xp,
-        date: dateStr,
-        createdAt: new Date().toISOString(),
-      })
+        // Sync to server
+        try {
+          const { addToSyncQueue } = await import('@/lib/sync-utils')
+          await addToSyncQueue({
+            client_event_id: crypto.randomUUID(),
+            event_type: 'HABIT_UNCOMPLETED',
+            event_version: 1,
+            client_created_at: new Date().toISOString(),
+            payload: { habitId: habit.id, date: dateStr },
+          })
+        } catch (syncError) {
+          console.warn('Failed to queue sync event:', syncError)
+        }
+      } else {
+        // Complete
+        newCompletedDates.add(dateStr)
 
-      // Sync to server
-      const { addToSyncQueue } = await import('@/lib/sync-utils')
-      await addToSyncQueue({
-        client_event_id: crypto.randomUUID(),
-        event_type: 'HABIT_COMPLETED',
-        event_version: 1,
-        client_created_at: new Date().toISOString(),
-        payload: { habitId: habit.id, date: dateStr, xp: habit.xp },
-      })
+        // Add to IndexedDB
+        await db.habit_logs.put({
+          id: crypto.randomUUID(),
+          userId: habit.userId,
+          habitId: habit.id,
+          completedAt: new Date().toISOString(),
+          xp: habit.xp,
+          date: dateStr,
+          createdAt: new Date().toISOString(),
+        })
+
+        // Sync to server
+        try {
+          const { addToSyncQueue } = await import('@/lib/sync-utils')
+          await addToSyncQueue({
+            client_event_id: crypto.randomUUID(),
+            event_type: 'HABIT_COMPLETED',
+            event_version: 1,
+            client_created_at: new Date().toISOString(),
+            payload: { habitId: habit.id, date: dateStr, xp: habit.xp },
+          })
+        } catch (syncError) {
+          console.warn('Failed to queue sync event:', syncError)
+        }
+      }
+
+      setCompletedDates(newCompletedDates)
+    } catch (error) {
+      console.error('Failed to toggle date:', error)
+    } finally {
+      setIsLoading(false)
     }
-
-    setCompletedDates(newCompletedDates)
   }
 
   return (
@@ -111,15 +128,15 @@ export function BackfillDialog({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm"
           />
 
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md max-h-[80vh] overflow-hidden"
+              className="w-full max-w-md"
             >
               <div className="rounded-3xl bg-white/90 backdrop-blur-sm p-6 shadow-2xl">
                 <div className="mb-4 flex items-center justify-between">
@@ -131,12 +148,24 @@ export function BackfillDialog({
                       {habit?.title}
                     </p>
                   </div>
-                  <button
-                    onClick={onClose}
-                    className="rounded-xl p-2 hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="h-5 w-5 text-gray-500" />
-                  </button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={onClose}
+                      size="sm"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        onSuccess()
+                        onClose()
+                      }}
+                      size="sm"
+                    >
+                      Done
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="mb-4">
@@ -154,11 +183,13 @@ export function BackfillDialog({
                       <button
                         key={dateStr}
                         onClick={() => toggleDate(date)}
+                        disabled={isLoading}
                         className={cn(
                           'w-full flex items-center justify-between rounded-2xl p-3 transition-all',
                           isCompleted
                             ? 'bg-green-50 border-2 border-green-500'
-                            : 'bg-gray-50 border-2 border-gray-200 hover:border-gray-300'
+                            : 'bg-gray-50 border-2 border-gray-200 hover:border-gray-300',
+                          isLoading && 'opacity-50 cursor-not-allowed'
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -194,25 +225,6 @@ export function BackfillDialog({
                       </button>
                     )
                   })}
-                </div>
-
-                <div className="mt-4 flex gap-3">
-                  <Button
-                    variant="outline"
-                    onClick={onClose}
-                    className="flex-1"
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      onSuccess()
-                      onClose()
-                    }}
-                    className="flex-1"
-                  >
-                    Done
-                  </Button>
                 </div>
               </div>
             </motion.div>
