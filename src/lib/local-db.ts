@@ -114,7 +114,7 @@ export class HabitQuestDB extends Dexie {
       user_habits: 'id, userId, isActive, sourceTemplateId, updatedAt',
       habit_logs: 'id, userId, habitId, date, completedAt',
       user_progress: 'id, userId, updatedAt',
-      sync_queue: '++id, clientEventId, eventType, createdAt',
+      sync_queue: '++id, clientEventId, eventType, retryCount, createdAt',
       settings: 'id',
       app_meta: 'id',
     })
@@ -125,7 +125,7 @@ export class HabitQuestDB extends Dexie {
       user_habits: 'id, userId, isActive, sourceTemplateId, updatedAt',
       habit_logs: 'id, userId, habitId, date, completedAt',
       user_progress: 'id, userId, updatedAt',
-      sync_queue: '++id, clientEventId, eventType, createdAt',
+      sync_queue: '++id, clientEventId, eventType, retryCount, createdAt',
       settings: 'id',
       app_meta: 'id',
     }).upgrade(async (tx) => {
