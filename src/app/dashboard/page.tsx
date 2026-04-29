@@ -155,12 +155,33 @@ export default function DashboardPage() {
             <p className="mb-8 text-gray-600">
               Choose a habit template to begin your quest and start building better habits today.
             </p>
-            <button
-              onClick={() => router.push('/templates')}
-              className="w-full rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-3 text-white font-semibold shadow-lg hover:from-blue-600 hover:to-indigo-600"
-            >
-              Browse Templates
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => router.push('/templates')}
+                className="flex-1 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-3 text-white font-semibold shadow-lg hover:from-blue-600 hover:to-indigo-600"
+              >
+                Browse Templates
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedHabit(null)
+                  setIsEditDialogOpen(true)
+                }}
+                className="flex-1 rounded-2xl bg-white border-2 border-gray-300 px-6 py-3 text-gray-700 font-semibold shadow-lg hover:bg-gray-50"
+              >
+                Create Custom Habit
+              </button>
+            </div>
+
+            <CustomHabitDialog
+              isOpen={isEditDialogOpen}
+              onClose={() => {
+                setIsEditDialogOpen(false)
+                setSelectedHabit(null)
+              }}
+              habit={selectedHabit}
+              onSuccess={loadData}
+            />
           </div>
         </div>
       </AppShell>

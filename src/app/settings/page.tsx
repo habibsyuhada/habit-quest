@@ -102,12 +102,12 @@ export default function SettingsPage() {
                 <span className="font-medium text-gray-900">{localVersion}</span>
               </div>
 
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span className="text-gray-600">Database Schema</span>
                 <span className="font-medium text-gray-900">
                   v{appMeta?.local_db_schema_version || 'N/A'}
                 </span>
-              </div>
+              </div> */}
 
               <div className="flex justify-between">
                 <span className="text-gray-600">Connection</span>
