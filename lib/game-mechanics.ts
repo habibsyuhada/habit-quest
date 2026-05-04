@@ -6,26 +6,30 @@ export function calculateXPForLevel(level: number): number {
   return Math.floor(GAME_CONFIG.BASE_XP_REQUIREMENT * Math.pow(GAME_CONFIG.XP_MULTIPLIER, level - 1));
 }
 
-// Calculate XP reward based on difficulty and value multiplier
-export function calculateXPReward(difficulty: TaskDifficulty, value: number = 1): number {
+// Calculate XP reward based on difficulty
+export function calculateXPReward(difficulty: TaskDifficulty): number {
   const baseReward = {
+    very_easy: GAME_CONFIG.XP_VERY_EASY,
     easy: GAME_CONFIG.XP_EASY,
     medium: GAME_CONFIG.XP_MEDIUM,
     hard: GAME_CONFIG.XP_HARD,
+    very_hard: GAME_CONFIG.XP_VERY_HARD,
   }[difficulty];
 
-  return Math.floor(baseReward * value);
+  return baseReward;
 }
 
-// Calculate Gold reward based on difficulty and value multiplier
-export function calculateGoldReward(difficulty: TaskDifficulty, value: number = 1): number {
+// Calculate Gold reward based on difficulty
+export function calculateGoldReward(difficulty: TaskDifficulty): number {
   const baseReward = {
+    very_easy: GAME_CONFIG.GOLD_VERY_EASY,
     easy: GAME_CONFIG.GOLD_EASY,
     medium: GAME_CONFIG.GOLD_MEDIUM,
     hard: GAME_CONFIG.GOLD_HARD,
+    very_hard: GAME_CONFIG.GOLD_VERY_HARD,
   }[difficulty];
 
-  return Math.floor(baseReward * value);
+  return baseReward;
 }
 
 // Check if user should level up

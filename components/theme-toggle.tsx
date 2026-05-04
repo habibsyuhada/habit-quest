@@ -8,11 +8,17 @@ export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = resolvedTheme || theme;
 
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(currentTheme === 'dark' ? 'light' : 'dark')}
+      onClick={handleToggle}
       className="h-9 w-9"
     >
       <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

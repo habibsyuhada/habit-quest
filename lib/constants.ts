@@ -1,13 +1,17 @@
 export const GAME_CONFIG = {
-  // XP rewards
+  // XP rewards - 5 difficulty levels
+  XP_VERY_EASY: 3,
   XP_EASY: 5,
   XP_MEDIUM: 10,
   XP_HARD: 15,
+  XP_VERY_HARD: 20,
 
-  // Gold rewards
+  // Gold rewards - synced dengan XP
+  GOLD_VERY_EASY: 1,
   GOLD_EASY: 2,
   GOLD_MEDIUM: 5,
   GOLD_HARD: 10,
+  GOLD_VERY_HARD: 15,
 
   // Leveling
   BASE_XP_REQUIREMENT: 50,
@@ -39,15 +43,27 @@ export const GAME_CONFIG = {
 } as const;
 
 export const XP_REWARDS = {
+  very_easy: GAME_CONFIG.XP_VERY_EASY,
   easy: GAME_CONFIG.XP_EASY,
   medium: GAME_CONFIG.XP_MEDIUM,
   hard: GAME_CONFIG.XP_HARD,
+  very_hard: GAME_CONFIG.XP_VERY_HARD,
 } as const;
 
 export const GOLD_REWARDS = {
+  very_easy: GAME_CONFIG.GOLD_VERY_EASY,
   easy: GAME_CONFIG.GOLD_EASY,
   medium: GAME_CONFIG.GOLD_MEDIUM,
   hard: GAME_CONFIG.GOLD_HARD,
+  very_hard: GAME_CONFIG.GOLD_VERY_HARD,
+} as const;
+
+export const DIFFICULTY_MULTIPLIERS = {
+  very_easy: 0.5,
+  easy: 1.0,
+  medium: 1.5,
+  hard: 2.0,
+  very_hard: 2.5,
 } as const;
 
 export const TASK_COLORS = {
@@ -57,16 +73,17 @@ export const TASK_COLORS = {
 } as const;
 
 export const DIFFICULTY_COLORS = {
-  easy: 'bg-gray-500',
-  medium: 'bg-yellow-500',
-  hard: 'bg-red-500',
+  very_easy: 'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200',
+  easy: 'bg-green-400 text-green-900 dark:bg-green-800 dark:text-green-200',
+  medium: 'bg-yellow-400 text-yellow-900 dark:bg-yellow-800 dark:text-yellow-200',
+  hard: 'bg-orange-400 text-orange-900 dark:bg-orange-800 dark:text-orange-200',
+  very_hard: 'bg-red-500 text-red-100 dark:bg-red-900 dark:text-red-200',
 } as const;
 
-export const DEFAULT_AVATAR = {
-  hair: 'short',
-  hairColor: '#4A3728',
-  skin: '#F5D0C5',
-  shirt: '#3498db',
-  background: '#e0f2fe',
-  accessories: [],
+export const DIFFICULTY_LABELS = {
+  very_easy: 'Very Easy',
+  easy: 'Easy',
+  medium: 'Medium',
+  hard: 'Hard',
+  very_hard: 'Very Hard',
 } as const;

@@ -18,8 +18,8 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: TaskCardProps) {
-  const difficultyColor = DIFFICULTY_COLORS[task.difficulty];
   const typeColor = TASK_COLORS[task.type];
+  const difficultyColor = DIFFICULTY_COLORS[task.difficulty];
 
   return (
     <motion.div
@@ -44,8 +44,8 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
                 <Badge className={cn('text-white text-xs', typeColor)}>
                   {task.type}
                 </Badge>
-                <Badge variant="outline" className={cn('text-white border-0 text-xs', difficultyColor)}>
-                  {task.difficulty}
+                <Badge variant="outline" className={cn('text-xs', DIFFICULTY_COLORS[task.difficulty])}>
+                  {task.difficulty === 'very_easy' ? 'Very Easy' : task.difficulty === 'very_hard' ? 'Very Hard' : task.difficulty.charAt(0).toUpperCase() + task.difficulty.slice(1)}
                 </Badge>
                 {task.type === 'daily' && task.streak !== undefined && task.streak > 0 && (
                   <Badge variant="secondary" className="bg-orange-100 text-orange-700 text-xs">

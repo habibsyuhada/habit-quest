@@ -118,8 +118,8 @@ export const useGameStore = create<GameStore>()(
           let newUser = { ...state.user };
 
           // Calculate rewards
-          const xpReward = calculateXPReward(task.difficulty, task.value);
-          const goldReward = calculateGoldReward(task.difficulty, task.value);
+          const xpReward = calculateXPReward(task.difficulty);
+          const goldReward = calculateGoldReward(task.difficulty);
 
           // Add rewards
           newUser.xp += xpReward;
@@ -177,8 +177,8 @@ export const useGameStore = create<GameStore>()(
 
           if (direction === 'positive') {
             // Give rewards
-            const xpReward = calculateXPReward(task.difficulty, task.value);
-            const goldReward = calculateGoldReward(task.difficulty, task.value);
+            const xpReward = calculateXPReward(task.difficulty);
+            const goldReward = calculateGoldReward(task.difficulty);
 
             newUser.xp += xpReward;
             newUser.gold += goldReward;

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Plus } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
 import { TagInput } from './TagInput';
@@ -89,7 +88,7 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
       title: title.trim(),
       description: description.trim() || undefined,
       difficulty,
-      value: value[0],
+      value: 1, // Fixed at 1, multiplier determined by difficulty
       tags,
     };
 
@@ -205,29 +204,16 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="very_easy">Very Easy</SelectItem>
                 <SelectItem value="easy">Easy</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="hard">Hard</SelectItem>
+                <SelectItem value="very_hard">Very Hard</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Value Slider */}
-          <div>
-            <label className="text-sm font-medium">Reward Multiplier: {value[0]}x</label>
-            <Slider
-              value={value}
-              onValueChange={setValue}
-              min={0.1}
-              max={2}
-              step={0.1}
-              className="mt-2"
-            />
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>0.1x</span>
-              <span>1x</span>
-              <span>2x</span>
-            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Higher difficulty = Better rewards
+            </p>
           </div>
 
           {/* Tags */}

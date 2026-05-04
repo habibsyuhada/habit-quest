@@ -35,7 +35,7 @@ export interface Avatar {
 
 // Task System
 export type TaskType = 'habit' | 'daily' | 'todo';
-export type TaskDifficulty = 'easy' | 'medium' | 'hard';
+export type TaskDifficulty = 'very_easy' | 'easy' | 'medium' | 'hard' | 'very_hard';
 export type HabitType = 'positive' | 'negative' | 'both';
 
 export interface Task {

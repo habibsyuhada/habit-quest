@@ -1,11 +1,19 @@
 'use client';
 
 import { useGameStore } from '@/lib/store';
-import { DEFAULT_AVATAR } from '@/lib/constants';
 
 interface AvatarDisplayProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
+
+const DEFAULT_AVATAR = {
+  hair: 'short',
+  hairColor: '#4A3728',
+  skin: '#F5D0C5',
+  shirt: '#3498db',
+  background: '#e0f2fe',
+  accessories: [],
+};
 
 export function AvatarDisplay({ size = 'md' }: AvatarDisplayProps) {
   const user = useGameStore((state) => state.user);
