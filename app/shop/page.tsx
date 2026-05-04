@@ -5,12 +5,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShopCard } from '@/components/shop/ShopCard';
 import { StatsBar } from '@/components/dashboard/StatsBar';
 import { useGameStore } from '@/lib/store';
-import { Plus, Swords, Shield, Heart, Droplet } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { RewardCategory } from '@/lib/types';
 
 export default function ShopPage() {
@@ -99,21 +98,21 @@ export default function ShopPage() {
   const customRewards = rewards.filter((r) => r.type === 'custom');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reward Shop</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Reward Shop</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               Spend your gold on items and custom rewards
             </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-right">
-              <p className="text-sm text-gray-600">Your Gold</p>
-              <p className="text-2xl font-bold text-yellow-600">{user.gold}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Your Gold</p>
+              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">{user.gold}</p>
             </div>
           </div>
         </div>
@@ -186,8 +185,8 @@ export default function ShopPage() {
                 />
               ))}
               {equipmentRewards.length === 0 && (
-                <div className="col-span-full text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-                  <p className="text-gray-500">No equipment available</p>
+                <div className="col-span-full text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+                  <p className="text-gray-500 dark:text-gray-400">No equipment available</p>
                 </div>
               )}
             </div>
@@ -204,8 +203,8 @@ export default function ShopPage() {
                 />
               ))}
               {potionRewards.length === 0 && (
-                <div className="col-span-full text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-                  <p className="text-gray-500">No potions available</p>
+                <div className="col-span-full text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+                  <p className="text-gray-500 dark:text-gray-400">No potions available</p>
                 </div>
               )}
             </div>
@@ -222,8 +221,8 @@ export default function ShopPage() {
                 />
               ))}
               {customRewards.length === 0 && (
-                <div className="col-span-full text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-                  <p className="text-gray-500 mb-4">No custom rewards yet</p>
+                <div className="col-span-full text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">No custom rewards yet</p>
                   <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                       <Button>

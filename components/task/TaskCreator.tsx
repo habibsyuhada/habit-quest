@@ -7,10 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
-import type { TaskType, TaskDifficulty, HabitType, WeeklyRepeat } from '@/lib/types';
+import type { Task, TaskType, TaskDifficulty, HabitType, WeeklyRepeat } from '@/lib/types';
 
 export function TaskCreator() {
   const [open, setOpen] = useState(false);
@@ -37,7 +36,7 @@ export function TaskCreator() {
 
     if (!title.trim()) return;
 
-    const taskData: Omit<any, 'id' | 'createdAt' | 'updatedAt'> = {
+    const taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> = {
       type,
       title: title.trim(),
       description: description.trim() || undefined,

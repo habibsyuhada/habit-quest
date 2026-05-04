@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { GameStore, Task, Reward, User, GameState } from './types';
+import type { GameStore, GameState } from './types';
 import {
   generateId,
   createDefaultUser,
@@ -11,7 +11,6 @@ import {
   handleDeath,
   shouldCheckDailies,
   isTodayRepeatDay,
-  calculateXPForLevel,
 } from './game-mechanics';
 import { GAME_CONFIG } from './constants';
 
@@ -30,7 +29,7 @@ const createInitialState = (): GameState => ({
 
 export const useGameStore = create<GameStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // Initial state
       ...createInitialState(),
 
@@ -48,7 +47,7 @@ export const useGameStore = create<GameStore>()(
 
       addXP: (amount) =>
         set((state) => {
-          let newXP = state.user.xp + amount;
+          const newXP = state.user.xp + amount;
           let newUser = { ...state.user, xp: newXP };
 
           // Check for level up
@@ -66,7 +65,7 @@ export const useGameStore = create<GameStore>()(
 
       takeDamage: (amount) =>
         set((state) => {
-          let newHealth = Math.max(0, state.user.health - amount);
+          const newHealth = Math.max(0, state.user.health - amount);
           let newUser = { ...state.user, health: newHealth };
 
           // Check for death
@@ -132,42 +131,39 @@ export const useGameStore = create<GameStore>()(
           }
 
           // Update task based on type
-          let updatedTasks = state.tasks;
-          if (task.type === 'todo') {
-            updatedTasks = state.tasks.map((t) =>
-              t.id === id
-                ? {
-                    ...t,
-                    completed: true,
-                    completedDate: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  }
-                : t
-            );
-          } else if (task.type === 'daily') {
-            // Update streak
-            const newStreak = (task.streak || 0) + 1;
+          const updatedTasks = state.tasks.map((t) => {
+            if (t.id !== id) return t;
 
-            // Health reward for streak
-            if (newStreak % GAME_CONFIG.STREAK_THRESHOLD === 0) {
-              newUser.health = Math.min(
-                newUser.maxHealth,
-                newUser.health + GAME_CONFIG.HEALTH_REWARD_STREAK
-              );
+            if (task.type === 'todo') {
+              return {
+                ...t,
+                completed: true,
+                completedDate: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
+            } else if (task.type === 'daily') {
+              // Update streak
+              const newStreak = (task.streak || 0) + 1;
+
+              // Health reward for streak
+              if (newStreak % GAME_CONFIG.STREAK_THRESHOLD === 0) {
+                newUser.health = Math.min(
+                  newUser.maxHealth,
+                  newUser.health + GAME_CONFIG.HEALTH_REWARD_STREAK
+                );
+              }
+
+              return {
+                ...t,
+                streak: newStreak,
+                completedToday: true,
+                lastCompleted: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
             }
 
-            updatedTasks = state.tasks.map((t) =>
-              t.id === id
-                ? {
-                    ...t,
-                    streak: newStreak,
-                    completedToday: true,
-                    lastCompleted: new Date().toISOString(),
-                    updatedAt: new Date().toISOString(),
-                  }
-                : t
-            );
-          }
+            return t;
+          });
 
           return { user: newUser, tasks: updatedTasks };
         }),
@@ -209,7 +205,7 @@ export const useGameStore = create<GameStore>()(
           if (!shouldCheckDailies(state.lastDailyCheck)) return state;
 
           let newUser = { ...state.user };
-          let updatedTasks = state.tasks.map((task) => {
+          const updatedTasks = state.tasks.map((task) => {
             if (task.type !== 'daily') return task;
 
             // Check if this daily should be done today

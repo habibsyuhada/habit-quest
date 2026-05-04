@@ -10,10 +10,9 @@ export function StatsBar() {
   const levelProgress = (user.xp / user.xpToNextLevel) * 100;
 
   const healthPercent = (user.health / user.maxHealth) * 100;
-  const manaPercent = (user.mana / user.maxMana) * 100;
 
   return (
-    <div className="bg-white border-b">
+    <div className="bg-white dark:bg-gray-900 border-b dark:border-gray-800">
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Health */}
@@ -28,8 +27,8 @@ export function StatsBar() {
             />
             <div className="flex-1">
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium">Health</span>
-                <span className="text-gray-600">
+                <span className="font-medium dark:text-gray-200">Health</span>
+                <span className="text-gray-600 dark:text-gray-400">
                   {user.health}/{user.maxHealth}
                 </span>
               </div>
@@ -46,8 +45,8 @@ export function StatsBar() {
             <Zap className="h-5 w-5 flex-shrink-0 text-yellow-500" />
             <div className="flex-1">
               <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium">Level {user.level}</span>
-                <span className="text-gray-600">
+                <span className="font-medium dark:text-gray-200">Level {user.level}</span>
+                <span className="text-gray-600 dark:text-gray-400">
                   {user.xp}/{user.xpToNextLevel} XP
                 </span>
               </div>
@@ -63,13 +62,13 @@ export function StatsBar() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Droplets className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium dark:text-gray-200">
                 {user.mana}/{user.maxMana}
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <Coins className="h-5 w-5 text-yellow-600" />
-              <span className="text-sm font-bold text-yellow-700">
+              <Coins className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+              <span className="text-sm font-bold text-yellow-700 dark:text-yellow-400">
                 {user.gold}
               </span>
             </div>

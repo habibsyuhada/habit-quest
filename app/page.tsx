@@ -47,16 +47,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             Welcome back, {user.name}!
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             Ready to turn your life into an adventure?
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function Home() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Swords className="h-5 w-5 text-purple-600" />
+              <Swords className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               <span>Character Stats</span>
             </CardTitle>
             <CardDescription>
@@ -99,19 +99,19 @@ export default function Home() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-sm text-gray-600">Strength</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Strength</p>
                 <p className="text-xl font-bold text-red-600">{user.stats.strength}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-600">Intelligence</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Intelligence</p>
                 <p className="text-xl font-bold text-blue-600">{user.stats.intelligence}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-600">Constitution</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Constitution</p>
                 <p className="text-xl font-bold text-green-600">{user.stats.constitution}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-600">Perception</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Perception</p>
                 <p className="text-xl font-bold text-purple-600">{user.stats.perception}</p>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function Home() {
             <CardHeader>
               <CardTitle>Getting Started</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-gray-600">
+            <CardContent className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <p>🎯 Create habits to build positive routines</p>
               <p>📅 Set up dailies for recurring tasks</p>
               <p>✅ Add to-dos for one-time goals</p>

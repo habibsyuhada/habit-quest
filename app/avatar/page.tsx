@@ -37,11 +37,11 @@ export default function AvatarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Avatar Creator</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Avatar Creator</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Preview */}
@@ -52,8 +52,8 @@ export default function AvatarPage() {
             <CardContent className="flex flex-col items-center space-y-4">
               <AvatarDisplay size="xl" />
               <div className="text-center">
-                <p className="text-lg font-semibold">{user.name}</p>
-                <p className="text-sm text-gray-600">Level {user.level} {user.avatar.hair}</p>
+                <p className="text-lg font-semibold dark:text-gray-100">{user.name}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Level {user.level} {user.avatar.hair}</p>
               </div>
               <div className="flex space-x-2">
                 <Button onClick={handleSave} className="flex-1">
