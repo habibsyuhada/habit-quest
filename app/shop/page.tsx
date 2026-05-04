@@ -101,18 +101,18 @@ export default function ShopPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Reward Shop</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Reward Shop</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
               Spend your gold on items and custom rewards
             </p>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm text-gray-600 dark:text-gray-400">Your Gold</p>
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">{user.gold}</p>
+          <div className="flex items-center justify-center sm:justify-end space-x-4">
+            <div className="text-center sm:text-right">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Your Gold</p>
+              <p className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-500">{user.gold}</p>
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function ShopPage() {
           </TabsList>
 
           <TabsContent value="equipment">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {equipmentRewards.map((reward) => (
                 <ShopCard
                   key={reward.id}
@@ -193,7 +193,7 @@ export default function ShopPage() {
           </TabsContent>
 
           <TabsContent value="potions">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {potionRewards.map((reward) => (
                 <ShopCard
                   key={reward.id}
@@ -211,7 +211,7 @@ export default function ShopPage() {
           </TabsContent>
 
           <TabsContent value="custom">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {customRewards.map((reward) => (
                 <ShopCard
                   key={reward.id}

@@ -44,19 +44,20 @@ export function ShopCard({ reward, userGold, onPurchase }: ShopCardProps) {
             <p className="text-sm text-gray-600">{reward.description}</p>
           )}
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center space-x-2">
-              <Coins className="h-4 w-4 text-yellow-600" />
-              <span className="font-bold text-yellow-700">{reward.cost}</span>
+              <Coins className="h-4 w-4 text-yellow-600 dark:text-yellow-500" />
+              <span className="font-bold text-yellow-700 dark:text-yellow-400">{reward.cost}</span>
             </div>
             <Button
               onClick={onPurchase}
               disabled={!canAfford || isOwned}
               size="sm"
               variant={isOwned ? 'secondary' : 'default'}
+              className="text-xs sm:text-sm"
             >
-              {isOwned ? 'Purchased' : canAfford ? 'Buy' : 'Not Enough Gold'}
+              {isOwned ? 'Purchased' : canAfford ? 'Buy' : 'No Gold'}
             </Button>
           </div>
         </CardContent>

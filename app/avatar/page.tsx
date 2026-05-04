@@ -40,10 +40,10 @@ export default function AvatarPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Avatar Creator</h1>
+      <main className="container mx-auto px-4 py-6 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Avatar Creator</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Preview */}
           <Card>
             <CardHeader>

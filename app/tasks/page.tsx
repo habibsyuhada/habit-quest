@@ -28,37 +28,37 @@ export default function TasksPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <StatsBar />
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Quest Log</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your tasks and earn rewards</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Quest Log</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage your tasks and earn rewards</p>
           </div>
           <TaskCreator />
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'habits' | 'dailies' | 'todos')} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="habits" className="relative">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
+            <TabsTrigger value="habits" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
               Habits
               {habits.length > 0 && (
-                <span className="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">
+                <span className="ml-1 sm:ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
                   {habits.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="dailies" className="relative">
+            <TabsTrigger value="dailies" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
               Dailies
               {dailies.length > 0 && (
-                <span className="ml-2 bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+                <span className="ml-1 sm:ml-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
                   {dailies.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="todos" className="relative">
+            <TabsTrigger value="todos" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
               To-Dos
               {todos.length > 0 && (
-                <span className="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
+                <span className="ml-1 sm:ml-2 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
                   {todos.length}
                 </span>
               )}
@@ -66,7 +66,7 @@ export default function TasksPage() {
           </TabsList>
 
           <TabsContent value="habits">
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {habits.length === 0 ? (
                 <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
                   <p className="text-gray-500 dark:text-gray-400 mb-4">No habits yet. Create your first habit!</p>
@@ -89,7 +89,7 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="dailies">
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {dailies.length === 0 ? (
                 <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
                   <p className="text-gray-500 dark:text-gray-400 mb-4">No dailies yet. Create your first daily task!</p>
@@ -111,7 +111,7 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="todos">
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {todos.length === 0 ? (
                 <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
                   <p className="text-gray-500 dark:text-gray-400 mb-4">No to-dos yet. Create your first to-do!</p>
