@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, Check, X, Plus } from 'lucide-react';
+import { Trash2, Check, X, Plus, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TASK_COLORS, DIFFICULTY_COLORS } from '@/lib/constants';
 import type { Task } from '@/lib/types';
@@ -13,10 +13,11 @@ interface TaskCardProps {
   task: Task;
   onComplete?: () => void;
   onDelete?: () => void;
+  onEdit?: () => void;
   onHabitAction?: (direction: 'positive' | 'negative') => void;
 }
 
-export function TaskCard({ task, onComplete, onDelete, onHabitAction }: TaskCardProps) {
+export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: TaskCardProps) {
   const difficultyColor = DIFFICULTY_COLORS[task.difficulty];
   const typeColor = TASK_COLORS[task.type];
 
@@ -56,8 +57,27 @@ export function TaskCard({ task, onComplete, onDelete, onHabitAction }: TaskCard
               {task.description && (
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{task.description}</p>
               )}
+              {task.tags && task.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {task.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs border-gray-300 dark:border-gray-600">
+                      #{tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex space-x-1 flex-shrink-0">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onEdit}
+                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
               {onDelete && (
                 <Button
                   variant="ghost"

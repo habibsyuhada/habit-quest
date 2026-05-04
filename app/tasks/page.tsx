@@ -7,6 +7,7 @@ import { TaskCreator } from '@/components/task/TaskCreator';
 import { useGameStore } from '@/lib/store';
 import { StatsBar } from '@/components/dashboard/StatsBar';
 import { AnimatePresence } from 'framer-motion';
+import type { Task } from '@/lib/types';
 
 export default function TasksPage() {
   const tasks = useGameStore((state) => state.tasks);
@@ -15,10 +16,22 @@ export default function TasksPage() {
   const deleteTask = useGameStore((state) => state.deleteTask);
   const checkDailies = useGameStore((state) => state.checkDailies);
   const [activeTab, setActiveTab] = useState<'habits' | 'dailies' | 'todos'>('habits');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
     checkDailies();
   }, [checkDailies]);
+
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditingTask(null);
+    setIsEditDialogOpen(false);
+  };
 
   const habits = tasks.filter((t) => t.type === 'habit');
   const dailies = tasks.filter((t) => t.type === 'daily');
@@ -80,6 +93,7 @@ export default function TasksPage() {
                       task={task}
                       onComplete={() => completeTask(task.id)}
                       onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
                       onHabitAction={(direction) => completeHabit(task.id, direction)}
                     />
                   ))}
@@ -103,6 +117,7 @@ export default function TasksPage() {
                       task={task}
                       onComplete={() => completeTask(task.id)}
                       onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
                     />
                   ))}
                 </AnimatePresence>
@@ -125,6 +140,7 @@ export default function TasksPage() {
                       task={task}
                       onComplete={() => completeTask(task.id)}
                       onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
                     />
                   ))}
                 </AnimatePresence>
@@ -132,6 +148,16 @@ export default function TasksPage() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Task Dialog */}
+        {editingTask && (
+          <TaskCreator
+            mode="edit"
+            initialData={editingTask}
+            open={isEditDialogOpen}
+            onOpenChange={handleCloseEditDialog}
+          />
+        )}
       </main>
     </div>
   );

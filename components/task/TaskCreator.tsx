@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,27 +9,75 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Plus } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
+import { TagInput } from './TagInput';
 import type { Task, TaskType, TaskDifficulty, HabitType, WeeklyRepeat } from '@/lib/types';
 
-export function TaskCreator() {
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [type, setType] = useState<TaskType>('todo');
-  const [difficulty, setDifficulty] = useState<TaskDifficulty>('medium');
-  const [value, setValue] = useState([1]);
-  const [habitType, setHabitType] = useState<HabitType>('positive');
-  const [repeat, setRepeat] = useState<WeeklyRepeat>({
-    mon: true,
-    tue: true,
-    wed: true,
-    thu: true,
-    fri: true,
-    sat: false,
-    sun: false,
-  });
+interface TaskCreatorProps {
+  mode?: 'create' | 'edit';
+  initialData?: Task;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function TaskCreator({ mode = 'create', initialData, open: controlledOpen, onOpenChange }: TaskCreatorProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
+
+  // Initialize form with initialData or defaults
+  const getInitialValues = () => {
+    if (mode === 'edit' && initialData) {
+      return {
+        title: initialData.title,
+        description: initialData.description || '',
+        type: initialData.type,
+        difficulty: initialData.difficulty,
+        value: [initialData.value],
+        tags: initialData.tags || [],
+        habitType: initialData.habitType || 'positive',
+        repeat: initialData.repeat || {
+          mon: true,
+          tue: true,
+          wed: true,
+          thu: true,
+          fri: true,
+          sat: false,
+          sun: false,
+        },
+      };
+    }
+    return {
+      title: '',
+      description: '',
+      type: 'todo' as TaskType,
+      difficulty: 'medium' as TaskDifficulty,
+      value: [1],
+      tags: [] as string[],
+      habitType: 'positive' as HabitType,
+      repeat: {
+        mon: true,
+        tue: true,
+        wed: true,
+        thu: true,
+        fri: true,
+        sat: false,
+        sun: false,
+      },
+    };
+  };
+
+  const initialValues = getInitialValues();
+  const [title, setTitle] = useState(initialValues.title);
+  const [description, setDescription] = useState(initialValues.description);
+  const [type, setType] = useState<TaskType>(initialValues.type);
+  const [difficulty, setDifficulty] = useState<TaskDifficulty>(initialValues.difficulty);
+  const [value, setValue] = useState(initialValues.value);
+  const [habitType, setHabitType] = useState<HabitType>(initialValues.habitType);
+  const [repeat, setRepeat] = useState<WeeklyRepeat>(initialValues.repeat);
+  const [tags, setTags] = useState<string[]>(initialValues.tags);
 
   const addTask = useGameStore((state) => state.addTask);
+  const updateTask = useGameStore((state) => state.updateTask);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,54 +90,72 @@ export function TaskCreator() {
       description: description.trim() || undefined,
       difficulty,
       value: value[0],
-      tags: [],
+      tags,
     };
 
     if (type === 'habit') {
       taskData.habitType = habitType;
     } else if (type === 'daily') {
       taskData.repeat = repeat;
-      taskData.streak = 0;
-      taskData.completedToday = false;
+      taskData.streak = mode === 'edit' && initialData?.type === 'daily' ? initialData.streak : 0;
+      taskData.completedToday = mode === 'edit' && initialData?.type === 'daily' ? initialData.completedToday : false;
     } else if (type === 'todo') {
-      taskData.completed = false;
+      taskData.completed = mode === 'edit' && initialData?.type === 'todo' ? initialData.completed : false;
     }
 
-    addTask(taskData);
+    if (mode === 'edit' && initialData) {
+      updateTask(initialData.id, taskData);
+    } else {
+      addTask(taskData);
+    }
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setType('todo');
-    setDifficulty('medium');
-    setValue([1]);
-    setHabitType('positive');
-    setRepeat({
-      mon: true,
-      tue: true,
-      wed: true,
-      thu: true,
-      fri: true,
-      sat: false,
-      sun: false,
-    });
+    // Reset form hanya untuk create mode
+    if (mode === 'create') {
+      setTitle('');
+      setDescription('');
+      setType('todo');
+      setDifficulty('medium');
+      setValue([1]);
+      setTags([]);
+      setHabitType('positive');
+      setRepeat({
+        mon: true,
+        tue: true,
+        wed: true,
+        thu: true,
+        fri: true,
+        sat: false,
+        sun: false,
+      });
+    }
 
     setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="lg" className="w-full md:w-auto">
+    <>
+      {mode === 'create' && (
+        <Button
+          size="lg"
+          className="w-full md:w-auto"
+          onClick={() => setOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" />
-          Create Task
+          <span className="hidden sm:inline">Create Task</span>
+          <span className="sm:hidden">New Task</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
+      )}
+
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+        key={initialData?.id || 'create'}
+      >
+        <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+          <DialogTitle>{mode === 'edit' ? 'Edit Task' : 'Create New Task'}</DialogTitle>
           <DialogDescription>
-            Add a new habit, daily, or to-do to your quest log
+            {mode === 'edit' ? 'Modify your existing task' : 'Add a new habit, daily, or to-do to your quest log'}
           </DialogDescription>
         </DialogHeader>
 
@@ -164,6 +230,9 @@ export function TaskCreator() {
             </div>
           </div>
 
+          {/* Tags */}
+          <TagInput value={tags} onChange={setTags} />
+
           {/* Habit-specific options */}
           {type === 'habit' && (
             <div>
@@ -212,5 +281,6 @@ export function TaskCreator() {
         </form>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

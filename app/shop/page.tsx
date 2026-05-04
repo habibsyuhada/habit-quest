@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -118,61 +118,21 @@ export default function ShopPage() {
         </div>
 
         <Tabs defaultValue="equipment" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="equipment">Equipment</TabsTrigger>
-            <TabsTrigger value="potions">Potions</TabsTrigger>
-            <TabsTrigger value="custom">
-              Custom Rewards
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="ml-2">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Custom Reward</DialogTitle>
-                    <DialogDescription>
-                      Create a personal reward to motivate yourself
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleCreateReward} className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium">Reward Name</label>
-                      <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g., Watch Netflix, Eat Pizza"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Cost (Gold)</label>
-                      <Input
-                        type="number"
-                        value={cost}
-                        onChange={(e) => setCost(e.target.value)}
-                        min="1"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Description</label>
-                      <Textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Optional description"
-                        rows={2}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full">
-                      Create Reward
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-4 mb-6">
+            <TabsList className="grid grid-cols-3 flex-1">
+              <TabsTrigger value="equipment">Equipment</TabsTrigger>
+              <TabsTrigger value="potions">Potions</TabsTrigger>
+              <TabsTrigger value="custom">Custom Rewards</TabsTrigger>
+            </TabsList>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Add Reward</span>
+            </Button>
+          </div>
 
           <TabsContent value="equipment">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -223,60 +183,60 @@ export default function ShopPage() {
               {customRewards.length === 0 && (
                 <div className="col-span-full text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
                   <p className="text-gray-500 dark:text-gray-400 mb-4">No custom rewards yet</p>
-                  <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                      <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Your First Reward
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Create Custom Reward</DialogTitle>
-                        <DialogDescription>
-                          Create a personal reward to motivate yourself
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form onSubmit={handleCreateReward} className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium">Reward Name</label>
-                          <Input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g., Watch Netflix, Eat Pizza"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium">Cost (Gold)</label>
-                          <Input
-                            type="number"
-                            value={cost}
-                            onChange={(e) => setCost(e.target.value)}
-                            min="1"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium">Description</label>
-                          <Textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Optional description"
-                            rows={2}
-                          />
-                        </div>
-                        <Button type="submit" className="w-full">
-                          Create Reward
-                        </Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
+                  <Button onClick={() => setOpen(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Reward
+                  </Button>
                 </div>
               )}
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Create Reward Dialog */}
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Custom Reward</DialogTitle>
+              <DialogDescription>
+                Create a personal reward to motivate yourself
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateReward} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Reward Name</label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g., Watch Netflix, Eat Pizza"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Cost (Gold)</label>
+                <Input
+                  type="number"
+                  value={cost}
+                  onChange={(e) => setCost(e.target.value)}
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Optional description"
+                  rows={2}
+                />
+              </div>
+              <Button type="submit" className="w-full">
+                Create Reward
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
