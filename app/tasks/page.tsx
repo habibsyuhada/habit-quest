@@ -8,6 +8,7 @@ import { useGameStore } from '@/lib/store';
 import { StatsBar } from '@/components/dashboard/StatsBar';
 import { AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
+import { Scroll } from 'lucide-react';
 import type { Task } from '@/lib/types';
 
 export default function TasksPage() {
@@ -35,7 +36,6 @@ export default function TasksPage() {
     setIsEditDialogOpen(false);
   };
 
-  // Get all unique tags from tasks
   const allTags = useMemo(() => {
     const tags = new Set<string>();
     tasks.forEach(task => {
@@ -44,7 +44,6 @@ export default function TasksPage() {
     return Array.from(tags).sort();
   }, [tasks]);
 
-  // Filter tasks by type and tag
   const filterTasksByTag = (tasks: Task[]) => {
     return selectedTag
       ? tasks.filter(task => task.tags?.includes(selectedTag))
@@ -56,15 +55,22 @@ export default function TasksPage() {
   const todos = filterTasksByTag(tasks.filter((t) => t.type === 'todo'));
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0c0b]">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-6 sm:py-8">
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Quest Log</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">Manage your tasks and earn rewards</p>
+              <div className="flex items-center gap-2 mb-1">
+                <Scroll className="h-6 w-6 text-amber-500" />
+                <h1 className="font-heading text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
+                  Quest Log
+                </h1>
+              </div>
+              <p className="text-stone-600 dark:text-stone-400 text-base">
+                Manage your adventures and earn rewards
+              </p>
             </div>
             <TaskCreator />
           </div>
@@ -72,10 +78,10 @@ export default function TasksPage() {
           {/* Tag Filters */}
           {allTags.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Filter:</span>
+              <span className="text-sm text-stone-600 dark:text-stone-400 font-medium">Filter by tag:</span>
               <Badge
                 variant={selectedTag === null ? 'default' : 'outline'}
-                className="cursor-pointer"
+                className="cursor-pointer px-3 py-1"
                 onClick={() => setSelectedTag(null)}
               >
                 All
@@ -84,7 +90,7 @@ export default function TasksPage() {
                 <Badge
                   key={tag}
                   variant={selectedTag === tag ? 'default' : 'outline'}
-                  className="cursor-pointer"
+                  className="cursor-pointer px-3 py-1"
                   onClick={() => setSelectedTag(tag)}
                 >
                   #{tag}
@@ -95,27 +101,27 @@ export default function TasksPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'habits' | 'dailies' | 'todos')} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
-            <TabsTrigger value="habits" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto bg-stone-200/50 dark:bg-stone-800/50 p-1">
+            <TabsTrigger value="habits" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
               Habits
               {habits.length > 0 && (
-                <span className="ml-1 sm:ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
+                <span className="ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full font-semibold">
                   {habits.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="dailies" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
+            <TabsTrigger value="dailies" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
               Dailies
               {dailies.length > 0 && (
-                <span className="ml-1 sm:ml-2 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
+                <span className="ml-2 bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300 text-xs px-2 py-0.5 rounded-full font-semibold">
                   {dailies.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="todos" className="relative text-xs sm:text-sm py-2 sm:py-2.5">
+            <TabsTrigger value="todos" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
               To-Dos
               {todos.length > 0 && (
-                <span className="ml-1 sm:ml-2 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">
+                <span className="ml-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 text-xs px-2 py-0.5 rounded-full font-semibold">
                   {todos.length}
                 </span>
               )}
@@ -123,10 +129,10 @@ export default function TasksPage() {
           </TabsList>
 
           <TabsContent value="habits">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {habits.length === 0 ? (
-                <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">No habits yet. Create your first habit!</p>
+                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
+                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No habits yet. Begin your journey!</p>
                   <TaskCreator />
                 </div>
               ) : (
@@ -147,10 +153,10 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="dailies">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {dailies.length === 0 ? (
-                <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">No dailies yet. Create your first daily task!</p>
+                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
+                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No dailies yet. Set up your routine!</p>
                   <TaskCreator />
                 </div>
               ) : (
@@ -170,10 +176,10 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="todos">
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {todos.length === 0 ? (
-                <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">No to-dos yet. Create your first to-do!</p>
+                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
+                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No to-dos yet. Add your first quest!</p>
                   <TaskCreator />
                 </div>
               ) : (

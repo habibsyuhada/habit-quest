@@ -7,15 +7,17 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock localStorage
+// Mock localStorage with complete Storage interface
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
 }
 
-global.localStorage = localStorageMock as Storage
+global.localStorage = localStorageMock as unknown as Storage
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {

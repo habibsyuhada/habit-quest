@@ -1,12 +1,12 @@
 import { vi } from 'vitest'
-import { ReactElement } from 'react'
+import { ReactElement, HTMLAttributes, ButtonHTMLAttributes } from 'react'
 
 // Mock Framer Motion components
 export const motion = {
-  div: vi.fn(({ children, ...props }: any) => <div {...props}>{children}</div>),
-  button: vi.fn(({ children, ...props }: any) => <button {...props}>{children}</button>),
-  span: vi.fn(({ children, ...props }: any) => <span {...props}>{children}</span>),
-  form: vi.fn(({ children, ...props }: any) => <form {...props}>{children}</form>),
+  div: vi.fn(({ children, ...props }: HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>),
+  button: vi.fn(({ children, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props}>{children}</button>),
+  span: vi.fn(({ children, ...props }: HTMLAttributes<HTMLSpanElement>) => <span {...props}>{children}</span>),
+  form: vi.fn(({ children, ...props }: HTMLAttributes<HTMLFormElement>) => <form {...props}>{children}</form>),
 }
 
 export const AnimatePresence = vi.fn(({ children }: { children: ReactElement }) => <>{children}</>)
@@ -19,7 +19,7 @@ export const useAnimation = vi.fn(() => ({
 }))
 
 // Mock useMotionValue hook
-export const useMotionValue = vi.fn((initial: any) => ({
+export const useMotionValue = vi.fn((initial: unknown) => ({
   value: initial,
   set: vi.fn(),
   get: vi.fn(),
@@ -27,5 +27,5 @@ export const useMotionValue = vi.fn((initial: any) => ({
 }))
 
 // Mock motion value hooks
-export const useTransform = vi.fn((value: any, transform: any) => value)
-export const useSpring = vi.fn((value: any, config: any) => value)
+export const useTransform = vi.fn((value: unknown, _transform: unknown) => value)
+export const useSpring = vi.fn((value: unknown, _config: unknown) => value)

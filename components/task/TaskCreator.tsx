@@ -88,7 +88,7 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
       title: title.trim(),
       description: description.trim() || undefined,
       difficulty,
-      value: 1, // Fixed at 1, multiplier determined by difficulty
+      value: 1,
       tags,
     };
 
@@ -136,12 +136,12 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
       {mode === 'create' && (
         <Button
           size="lg"
-          className="w-full md:w-auto"
+          className="w-full md:w-auto bg-amber-500 hover:bg-amber-600 font-semibold shadow-md shadow-amber-500/25"
           onClick={() => setOpen(true)}
         >
-          <Plus className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Create Task</span>
-          <span className="sm:hidden">New Task</span>
+          <Plus className="mr-2 h-5 w-5" strokeWidth={2.5} />
+          <span className="hidden sm:inline">New Quest</span>
+          <span className="sm:hidden">New</span>
         </Button>
       )}
 
@@ -150,10 +150,10 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
         onOpenChange={setOpen}
         key={initialData?.id || 'create'}
       >
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
         <DialogHeader>
-          <DialogTitle>{mode === 'edit' ? 'Edit Task' : 'Create New Task'}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="font-heading text-xl">{mode === 'edit' ? 'Edit Task' : 'Create New Quest'}</DialogTitle>
+          <DialogDescription className="text-stone-600 dark:text-stone-400">
             {mode === 'edit' ? 'Modify your existing task' : 'Add a new habit, daily, or to-do to your quest log'}
           </DialogDescription>
         </DialogHeader>
@@ -161,31 +161,33 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
-            <label className="text-sm font-medium">Title *</label>
+            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300">Title *</label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Task title"
+              placeholder="Quest title"
               required
+              className="border-stone-300 dark:border-stone-700"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="text-sm font-medium">Description</label>
+            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300">Description</label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description"
               rows={2}
+              className="border-stone-300 dark:border-stone-700"
             />
           </div>
 
           {/* Type */}
           <div>
-            <label className="text-sm font-medium">Type</label>
+            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300">Type</label>
             <Select value={type} onValueChange={(value) => setType(value as TaskType)}>
-              <SelectTrigger>
+              <SelectTrigger className="border-stone-300 dark:border-stone-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -198,9 +200,9 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
 
           {/* Difficulty */}
           <div>
-            <label className="text-sm font-medium">Difficulty</label>
+            <label className="text-sm font-semibold text-stone-700 dark:text-stone-300">Difficulty</label>
             <Select value={difficulty} onValueChange={(value) => setDifficulty(value as TaskDifficulty)}>
-              <SelectTrigger>
+              <SelectTrigger className="border-stone-300 dark:border-stone-700">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -211,7 +213,7 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
                 <SelectItem value="very_hard">Very Hard</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
               Higher difficulty = Better rewards
             </p>
           </div>
@@ -222,9 +224,9 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
           {/* Habit-specific options */}
           {type === 'habit' && (
             <div>
-              <label className="text-sm font-medium">Habit Type</label>
+              <label className="text-sm font-semibold text-stone-700 dark:text-stone-300">Habit Type</label>
               <Select value={habitType} onValueChange={(value) => setHabitType(value as HabitType)}>
-                <SelectTrigger>
+                <SelectTrigger className="border-stone-300 dark:border-stone-700">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -239,7 +241,7 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
           {/* Daily-specific options */}
           {type === 'daily' && (
             <div>
-              <label className="text-sm font-medium mb-2 block">Repeat On</label>
+              <label className="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2 block">Repeat On</label>
               <div className="grid grid-cols-7 gap-2">
                 {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => (
                   <button
@@ -247,10 +249,10 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
                     type="button"
                     onClick={() => setRepeat({ ...repeat, [day]: !repeat[day as keyof WeeklyRepeat] })}
                     className={`
-                      p-2 text-xs font-medium rounded-md capitalize transition-colors
+                      p-2 text-xs font-medium rounded-lg capitalize transition-all
                       ${repeat[day as keyof WeeklyRepeat]
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-sky-600 text-white shadow-md shadow-sky-500/25'
+                        : 'bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-300 dark:hover:bg-stone-600'
                       }
                     `}
                   >
@@ -261,8 +263,8 @@ export function TaskCreator({ mode = 'create', initialData, open: controlledOpen
             </div>
           )}
 
-          <Button type="submit" className="w-full">
-            Create Task
+          <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 font-semibold shadow-md shadow-amber-500/25">
+            {mode === 'edit' ? 'Save Changes' : 'Create Quest'}
           </Button>
         </form>
       </DialogContent>
