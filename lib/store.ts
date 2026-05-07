@@ -173,6 +173,17 @@ export const useGameStore = create<GameStore>()(
           const task = state.tasks.find((t) => t.id === id);
           if (!task || task.type !== 'habit') return state;
 
+          // Validate direction against habitType
+          const habitType = task.habitType || 'both';
+          if (habitType === 'positive' && direction === 'negative') {
+            // Positive-only habits cannot have negative actions
+            return state;
+          }
+          if (habitType === 'negative' && direction === 'positive') {
+            // Negative-only habits cannot have positive actions
+            return state;
+          }
+
           let newUser = { ...state.user };
 
           if (direction === 'positive') {

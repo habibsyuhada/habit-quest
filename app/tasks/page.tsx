@@ -55,7 +55,7 @@ export default function TasksPage() {
   const todos = filterTasksByTag(tasks.filter((t) => t.type === 'todo'));
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0c0b]">
+    <div className="min-h-screen bg-theme-secondary">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-6 sm:py-8">
@@ -64,11 +64,11 @@ export default function TasksPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Scroll className="h-6 w-6 text-amber-500" />
-                <h1 className="font-heading text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
+                <h1 className="font-heading text-3xl sm:text-4xl font-bold text-theme-primary">
                   Quest Log
                 </h1>
               </div>
-              <p className="text-stone-600 dark:text-stone-400 text-base">
+              <p className="text-theme-secondary text-base">
                 Manage your adventures and earn rewards
               </p>
             </div>
@@ -78,7 +78,7 @@ export default function TasksPage() {
           {/* Tag Filters */}
           {allTags.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-stone-600 dark:text-stone-400 font-medium">Filter by tag:</span>
+              <span className="text-sm text-theme-secondary font-medium">Filter by tag:</span>
               <Badge
                 variant={selectedTag === null ? 'default' : 'outline'}
                 className="cursor-pointer px-3 py-1"
@@ -101,27 +101,27 @@ export default function TasksPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'habits' | 'dailies' | 'todos')} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto bg-stone-200/50 dark:bg-stone-800/50 p-1">
-            <TabsTrigger value="habits" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto bg-gray-200-custom p-1">
+            <TabsTrigger value="habits" className="relative text-sm py-2.5 data-[state=active]:bg-theme-primary data-[state=active]:shadow-sm">
               Habits
               {habits.length > 0 && (
-                <span className="ml-2 bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full font-semibold">
+                <span className="ml-2 bg-purple-100-custom text-purple-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
                   {habits.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="dailies" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
+            <TabsTrigger value="dailies" className="relative text-sm py-2.5 data-[state=active]:bg-theme-primary data-[state=active]:shadow-sm">
               Dailies
               {dailies.length > 0 && (
-                <span className="ml-2 bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300 text-xs px-2 py-0.5 rounded-full font-semibold">
+                <span className="ml-2 bg-sky-100-custom text-sky-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
                   {dailies.length}
                 </span>
               )}
             </TabsTrigger>
-            <TabsTrigger value="todos" className="relative text-sm py-2.5 data-[state=active]:bg-white dark:data-[state=active]:bg-stone-900 data-[state=active]:shadow-sm">
+            <TabsTrigger value="todos" className="relative text-sm py-2.5 data-[state=active]:bg-theme-primary data-[state=active]:shadow-sm">
               To-Dos
               {todos.length > 0 && (
-                <span className="ml-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 text-xs px-2 py-0.5 rounded-full font-semibold">
+                <span className="ml-2 bg-green-100-custom text-green-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
                   {todos.length}
                 </span>
               )}
@@ -131,8 +131,8 @@ export default function TasksPage() {
           <TabsContent value="habits">
             <div className="grid grid-cols-1 gap-4">
               {habits.length === 0 ? (
-                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
-                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No habits yet. Begin your journey!</p>
+                <div className="text-center py-16 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary mb-4 text-lg">No habits yet. Begin your journey!</p>
                   <TaskCreator />
                 </div>
               ) : (
@@ -155,8 +155,8 @@ export default function TasksPage() {
           <TabsContent value="dailies">
             <div className="grid grid-cols-1 gap-4">
               {dailies.length === 0 ? (
-                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
-                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No dailies yet. Set up your routine!</p>
+                <div className="text-center py-16 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary mb-4 text-lg">No dailies yet. Set up your routine!</p>
                   <TaskCreator />
                 </div>
               ) : (
@@ -178,8 +178,8 @@ export default function TasksPage() {
           <TabsContent value="todos">
             <div className="grid grid-cols-1 gap-4">
               {todos.length === 0 ? (
-                <div className="text-center py-16 bg-white/50 dark:bg-stone-900/50 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-700">
-                  <p className="text-stone-500 dark:text-stone-400 mb-4 text-lg">No to-dos yet. Add your first quest!</p>
+                <div className="text-center py-16 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary mb-4 text-lg">No to-dos yet. Add your first quest!</p>
                   <TaskCreator />
                 </div>
               ) : (

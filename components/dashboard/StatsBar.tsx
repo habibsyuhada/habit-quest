@@ -4,10 +4,11 @@ import { useGameStore } from '@/lib/store';
 import { Progress } from '@/components/ui/progress';
 import { Coins, Heart, Droplets, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { calculateLevelProgress } from '@/lib/game-mechanics';
 
 export function StatsBar() {
   const user = useGameStore((state) => state.user);
-  const levelProgress = (user.xp / user.xpToNextLevel) * 100;
+  const levelProgress = calculateLevelProgress(user);
   const healthPercent = (user.health / user.maxHealth) * 100;
 
   return (
@@ -60,7 +61,7 @@ export function StatsBar() {
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="font-heading font-semibold text-theme-primary text-xs sm:text-sm">Level {user.level}</span>
                 <span className="text-theme-secondary text-xs font-medium">
-                  {user.xp}/{user.xpToNextLevel}
+                  {Math.round(levelProgress)}%
                 </span>
               </div>
               <Progress

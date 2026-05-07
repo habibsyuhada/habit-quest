@@ -21,6 +21,11 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
   const typeColor = TASK_COLORS[task.type];
   const difficultyColor = DIFFICULTY_COLORS[task.difficulty];
 
+  // Determine which habit buttons to show based on habitType
+  const habitType = task.habitType || 'both';
+  const showPositiveButton = habitType === 'positive' || habitType === 'both';
+  const showNegativeButton = habitType === 'negative' || habitType === 'both';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -44,6 +49,11 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
                 <Badge className={cn('text-white text-xs px-2.5 py-0.5 font-semibold', typeColor)}>
                   {task.type}
                 </Badge>
+                {task.type === 'habit' && task.habitType && task.habitType !== 'both' && (
+                  <Badge variant="outline" className="text-xs px-2.5 py-0.5 font-medium border-gray-300-custom">
+                    {task.habitType === 'positive' ? '+' : task.habitType === 'negative' ? '-' : '±'}
+                  </Badge>
+                )}
                 <Badge variant="outline" className={cn('text-xs px-2.5 py-0.5 font-medium border-gray-300-custom', difficultyColor)}>
                   {task.difficulty === 'very_easy' ? 'Very Easy' : task.difficulty === 'very_hard' ? 'Very Hard' : task.difficulty.charAt(0).toUpperCase() + task.difficulty.slice(1)}
                 </Badge>
@@ -95,25 +105,29 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
           {/* Actions based on task type */}
           {task.type === 'habit' && onHabitAction && (
             <div className="flex gap-3">
-              <Button
-                onClick={() => onHabitAction('positive')}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-sm font-semibold shadow-md shadow-emerald-500/25"
-                size="sm"
-              >
-                <Plus className="mr-2 h-4 w-4" strokeWidth={2.5} />
-                <span className="hidden sm:inline">Positive</span>
-                <span className="sm:hidden">+</span>
-              </Button>
-              <Button
-                onClick={() => onHabitAction('negative')}
-                variant="destructive"
-                className="flex-1 text-sm font-semibold"
-                size="sm"
-              >
-                <X className="mr-2 h-4 w-4" strokeWidth={2.5} />
-                <span className="hidden sm:inline">Negative</span>
-                <span className="sm:hidden">-</span>
-              </Button>
+              {showPositiveButton && (
+                <Button
+                  onClick={() => onHabitAction('positive')}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-sm font-semibold shadow-md shadow-emerald-500/25"
+                  size="sm"
+                >
+                  <Plus className="mr-2 h-4 w-4" strokeWidth={2.5} />
+                  <span className="hidden sm:inline">Positive</span>
+                  <span className="sm:hidden">+</span>
+                </Button>
+              )}
+              {showNegativeButton && (
+                <Button
+                  onClick={() => onHabitAction('negative')}
+                  variant="destructive"
+                  className="flex-1 text-sm font-semibold"
+                  size="sm"
+                >
+                  <X className="mr-2 h-4 w-4" strokeWidth={2.5} />
+                  <span className="hidden sm:inline">Negative</span>
+                  <span className="sm:hidden">-</span>
+                </Button>
+              )}
             </div>
           )}
 

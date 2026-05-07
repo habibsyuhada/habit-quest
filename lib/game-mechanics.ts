@@ -48,21 +48,28 @@ export function calculateLevelProgress(user: User): number {
   return Math.min(100, Math.max(0, (currentXPInRange / xpInRange) * 100));
 }
 
-// Handle level up
+// Handle level up - supports multiple level ups at once
 export function handleLevelUp(user: User): User {
-  const newUser = { ...user };
-  newUser.level += 1;
-  newUser.health = newUser.maxHealth; // Restore health on level up
-  newUser.maxMana += 5; // Increase max mana
-  newUser.mana = newUser.maxMana; // Restore mana
+  let newUser = { ...user };
 
-  // Increase stats
-  newUser.stats = {
-    strength: newUser.stats.strength + 1,
-    intelligence: newUser.stats.intelligence + 1,
-    constitution: newUser.stats.constitution + 1,
-    perception: newUser.stats.perception + 1,
-  };
+  // Keep leveling up while XP is sufficient for the next level
+  while (shouldLevelUp(newUser.xp, newUser.level)) {
+    newUser.level += 1;
+    newUser.health = newUser.maxHealth; // Restore health on level up
+    newUser.maxMana += 5; // Increase max mana
+    newUser.mana = newUser.maxMana; // Restore mana
+
+    // Increase stats
+    newUser.stats = {
+      strength: newUser.stats.strength + 1,
+      intelligence: newUser.stats.intelligence + 1,
+      constitution: newUser.stats.constitution + 1,
+      perception: newUser.stats.perception + 1,
+    };
+  }
+
+  // Update xpToNextLevel to reflect the new level
+  newUser.xpToNextLevel = calculateXPForLevel(newUser.level + 1);
 
   return newUser;
 }
