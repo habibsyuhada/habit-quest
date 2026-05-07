@@ -27,27 +27,27 @@ export default function Home() {
       title: 'Habits',
       value: habitCount,
       icon: Target,
-      bgColor: 'bg-purple-100 dark:bg-purple-900/30',
-      iconColor: 'text-purple-600 dark:text-purple-400',
+      bgColor: 'bg-purple-100-custom',
+      iconColor: 'text-purple-600-custom',
     },
     {
       title: 'Dailies',
       value: dailyCount,
       icon: Zap,
-      bgColor: 'bg-sky-100 dark:bg-sky-900/30',
-      iconColor: 'text-sky-600 dark:text-sky-400',
+      bgColor: 'bg-sky-100-custom',
+      iconColor: 'text-sky-600-custom',
     },
     {
       title: 'To-Dos',
       value: `${completedTodos}/${todoCount}`,
       icon: Trophy,
-      bgColor: 'bg-emerald-100 dark:bg-emerald-900/30',
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      bgColor: 'bg-green-100-custom',
+      iconColor: 'text-green-600-custom',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] dark:bg-[#0c0c0b]">
+    <div className="min-h-screen bg-theme-secondary">
       <StatsBar />
 
       <main className="container mx-auto px-4 py-6 sm:py-8">
@@ -55,11 +55,11 @@ export default function Home() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="h-5 w-5 text-amber-500" />
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-stone-900 dark:text-stone-100">
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-theme-primary">
               Welcome back, {user.name}!
             </h1>
           </div>
-          <p className="text-stone-600 dark:text-stone-400 text-base sm:text-lg">
+          <p className="text-theme-secondary text-base sm:text-lg">
             Your adventure continues. Ready for today&apos;s quests?
           </p>
         </div>
@@ -69,15 +69,15 @@ export default function Home() {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.title} className="border-stone-200/60 dark:border-stone-800/60 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+              <Card key={stat.title} className="border-gray-200-custom bg-theme-primary/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-5">
                   <div className="flex items-center gap-4">
                     <div className={`${stat.bgColor} p-3 rounded-2xl`}>
                       <Icon className={`h-6 w-6 ${stat.iconColor}`} strokeWidth={2} />
                     </div>
                     <div>
-                      <p className="text-sm text-stone-600 dark:text-stone-400 font-medium">{stat.title}</p>
-                      <p className="text-2xl font-heading font-bold text-stone-900 dark:text-stone-100">
+                      <p className="text-sm text-theme-secondary font-medium">{stat.title}</p>
+                      <p className="text-2xl font-heading font-bold text-theme-primary">
                         {stat.value}
                       </p>
                     </div>
@@ -89,7 +89,7 @@ export default function Home() {
         </div>
 
         {/* Character Stats */}
-        <Card className="mb-8 border-stone-200/60 dark:border-stone-800/60 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm">
+        <Card className="mb-8 border-gray-200-custom bg-theme-primary/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 font-heading">
               <div className="bg-gradient-to-br from-amber-400 to-amber-600 p-2 rounded-xl">
@@ -97,23 +97,23 @@ export default function Home() {
               </div>
               <span>Hero Stats</span>
             </CardTitle>
-            <CardDescription className="text-stone-600 dark:text-stone-400">
+            <CardDescription className="text-theme-secondary">
               Complete quests to grow stronger
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { name: 'Strength', value: user.stats.strength, color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
-                { name: 'Intellect', value: user.stats.intelligence, color: 'text-sky-500', bg: 'bg-sky-100 dark:bg-sky-900/30' },
-                { name: 'Vitality', value: user.stats.constitution, color: 'text-emerald-500', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
-                { name: 'Focus', value: user.stats.perception, color: 'text-purple-500', bg: 'bg-purple-100 dark:bg-purple-900/30' },
+                { name: 'Strength', value: user.stats.strength, color: 'text-red-500', bg: 'bg-red-100-custom' },
+                { name: 'Intellect', value: user.stats.intelligence, color: 'text-sky-500', bg: 'bg-sky-100-custom' },
+                { name: 'Vitality', value: user.stats.constitution, color: 'text-emerald-500', bg: 'bg-green-100-custom' },
+                { name: 'Focus', value: user.stats.perception, color: 'text-purple-500', bg: 'bg-purple-100-custom' },
               ].map((stat) => (
                 <div key={stat.name} className="text-center">
                   <div className={`${stat.bg} ${stat.color} w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-2`}>
                     <span className="font-heading font-bold text-lg">{stat.value}</span>
                   </div>
-                  <p className="text-sm text-stone-600 dark:text-stone-400 font-medium">{stat.name}</p>
+                  <p className="text-sm text-theme-secondary font-medium">{stat.name}</p>
                 </div>
               ))}
             </div>
@@ -122,7 +122,7 @@ export default function Home() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="border-stone-200/60 dark:border-stone-800/60 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200-custom bg-theme-primary/50 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="font-heading">Quick Actions</CardTitle>
             </CardHeader>
@@ -135,13 +135,13 @@ export default function Home() {
               </Link>
               <div className="grid grid-cols-2 gap-3">
                 <Link href="/shop">
-                  <Button variant="outline" className="w-full h-12 border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800" size="lg">
+                  <Button variant="outline" className="w-full h-12 border-gray-300-custom hover:bg-gray-100-custom" size="lg">
                     <Trophy className="mr-2 h-4 w-4" />
                     Shop
                   </Button>
                 </Link>
                 <Link href="/avatar">
-                  <Button variant="outline" className="w-full h-12 border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800" size="lg">
+                  <Button variant="outline" className="w-full h-12 border-gray-300-custom hover:bg-gray-100-custom" size="lg">
                     <Swords className="mr-2 h-4 w-4" />
                     Hero
                   </Button>
@@ -150,11 +150,11 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="border-stone-200/60 dark:border-stone-800/60 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm">
+          <Card className="border-gray-200-custom bg-theme-primary/50 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="font-heading">Getting Started</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-stone-600 dark:text-stone-400">
+            <CardContent className="space-y-3 text-theme-secondary">
               <div className="flex items-start gap-3">
                 <span className="text-xl">🎯</span>
                 <p className="text-sm">Build positive habits that stick</p>

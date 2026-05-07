@@ -30,7 +30,7 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
     >
       <Card
         className={cn(
-          'border-stone-200/60 dark:border-stone-800/60 bg-white/50 dark:bg-stone-900/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-l-4',
+          'border-gray-200-custom bg-theme-primary/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-l-4',
           task.type === 'todo' && task.completed && 'opacity-60',
           task.type === 'habit' && 'border-l-purple-500',
           task.type === 'daily' && 'border-l-sky-500',
@@ -44,23 +44,23 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
                 <Badge className={cn('text-white text-xs px-2.5 py-0.5 font-semibold', typeColor)}>
                   {task.type}
                 </Badge>
-                <Badge variant="outline" className={cn('text-xs px-2.5 py-0.5 font-medium border-stone-300 dark:border-stone-600', difficultyColor)}>
+                <Badge variant="outline" className={cn('text-xs px-2.5 py-0.5 font-medium border-gray-300-custom', difficultyColor)}>
                   {task.difficulty === 'very_easy' ? 'Very Easy' : task.difficulty === 'very_hard' ? 'Very Hard' : task.difficulty.charAt(0).toUpperCase() + task.difficulty.slice(1)}
                 </Badge>
                 {task.type === 'daily' && task.streak !== undefined && task.streak > 0 && (
-                  <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs px-2.5 py-0.5 font-semibold">
+                  <Badge variant="secondary" className="bg-orange-100-custom text-orange-700-custom text-xs px-2.5 py-0.5 font-semibold">
                     🔥 {task.streak}
                   </Badge>
                 )}
               </div>
-              <CardTitle className="text-lg leading-tight text-stone-900 dark:text-stone-100">{task.title}</CardTitle>
+              <CardTitle className="text-lg leading-tight text-theme-primary">{task.title}</CardTitle>
               {task.description && (
-                <p className="text-sm text-stone-600 dark:text-stone-400 mt-1.5 line-clamp-2">{task.description}</p>
+                <p className="text-sm text-theme-secondary mt-1.5 line-clamp-2">{task.description}</p>
               )}
               {task.tags && task.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {task.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs border-stone-300 dark:border-stone-600 px-2 py-0.5">
+                    <Badge key={tag} variant="outline" className="text-xs border-gray-300-custom px-2 py-0.5">
                       #{tag}
                     </Badge>
                   ))}
@@ -73,7 +73,7 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
                   variant="ghost"
                   size="icon"
                   onClick={onEdit}
-                  className="h-9 w-9 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-900/20"
+                  className="h-9 w-9 text-sky-600-custom hover:bg-sky-100-custom"
                 >
                   <Edit className="h-4 w-4" strokeWidth={2} />
                 </Button>
@@ -83,7 +83,7 @@ export function TaskCard({ task, onComplete, onDelete, onEdit, onHabitAction }: 
                   variant="ghost"
                   size="icon"
                   onClick={onDelete}
-                  className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="h-9 w-9 text-red-500 hover:bg-red-100-custom"
                 >
                   <Trash2 className="h-4 w-4" strokeWidth={2} />
                 </Button>

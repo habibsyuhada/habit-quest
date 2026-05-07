@@ -11,7 +11,7 @@ export function StatsBar() {
   const healthPercent = (user.health / user.maxHealth) * 100;
 
   return (
-    <div className="bg-[#fafaf9] dark:bg-[#0c0c0b] border-b border-stone-200/60 dark:border-stone-800/60">
+    <div className="bg-theme-secondary border-b border-gray-200-custom">
       <div className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {/* Health */}
@@ -32,14 +32,14 @@ export function StatsBar() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex justify-between text-xs mb-1.5">
-                <span className="font-heading font-semibold text-stone-700 dark:text-stone-300 text-xs sm:text-sm">Health</span>
-                <span className="text-stone-500 dark:text-stone-400 text-xs font-medium">
+                <span className="font-heading font-semibold text-theme-primary text-xs sm:text-sm">Health</span>
+                <span className="text-theme-secondary text-xs font-medium">
                   {user.health}/{user.maxHealth}
                 </span>
               </div>
               <Progress
                 value={healthPercent}
-                className="h-2 sm:h-2.5 bg-stone-200 dark:bg-stone-800"
+                className="h-2 sm:h-2.5 bg-gray-200-custom"
                 indicatorClassName={cn(
                   'bg-gradient-to-r shadow-lg',
                   healthPercent < 25
@@ -58,14 +58,14 @@ export function StatsBar() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex justify-between text-xs mb-1.5">
-                <span className="font-heading font-semibold text-stone-700 dark:text-stone-300 text-xs sm:text-sm">Level {user.level}</span>
-                <span className="text-stone-500 dark:text-stone-400 text-xs font-medium">
+                <span className="font-heading font-semibold text-theme-primary text-xs sm:text-sm">Level {user.level}</span>
+                <span className="text-theme-secondary text-xs font-medium">
                   {user.xp}/{user.xpToNextLevel}
                 </span>
               </div>
               <Progress
                 value={levelProgress}
-                className="h-2 sm:h-2.5 bg-stone-200 dark:bg-stone-800"
+                className="h-2 sm:h-2.5 bg-gray-200-custom"
                 indicatorClassName="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 shadow-lg shadow-amber-500/30"
               />
             </div>
@@ -78,7 +78,7 @@ export function StatsBar() {
                 <div className="absolute inset-0 bg-sky-500/20 rounded-full blur-lg" />
                 <Droplets className="relative h-5 w-5 sm:h-6 sm:w-6 text-sky-500" strokeWidth={2.5} fill="currentColor" />
               </div>
-              <span className="text-sm font-heading font-semibold text-stone-700 dark:text-stone-300">
+              <span className="text-sm font-heading font-semibold text-theme-primary">
                 {user.mana}/{user.maxMana}
               </span>
             </div>
@@ -87,7 +87,7 @@ export function StatsBar() {
                 <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-lg" />
                 <Coins className="relative h-5 w-5 sm:h-6 sm:w-6 text-amber-500" strokeWidth={2.5} fill="currentColor" />
               </div>
-              <span className="text-sm font-heading font-bold text-amber-600 dark:text-amber-400">
+              <span className="text-sm font-heading font-bold text-amber-600-custom">
                 {user.gold}
               </span>
             </div>

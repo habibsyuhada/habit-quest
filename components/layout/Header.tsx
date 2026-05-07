@@ -22,7 +22,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-stone-200/60 bg-[#fafaf9]/80 backdrop-blur-md dark:border-stone-800/60 dark:bg-[#0c0c0b]/80">
+    <header className="sticky top-0 z-50 border-b border-gray-200-custom bg-theme-secondary/80 backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -34,8 +34,8 @@ export function Header() {
               </div>
             </div>
             <span className="font-heading font-bold text-xl tracking-tight">
-              <span className="text-stone-900 dark:text-stone-100">Habit</span>
-              <span className="text-amber-600 dark:text-amber-400">Quest</span>
+              <span className="text-theme-primary">Habit</span>
+              <span className="text-amber-600-custom">Quest</span>
             </span>
           </Link>
 
@@ -53,7 +53,7 @@ export function Header() {
                     'flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all',
                     isActive
                       ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25'
-                      : 'text-stone-600 hover:bg-stone-200/50 dark:text-stone-400 dark:hover:bg-stone-800/50'
+                      : 'text-theme-secondary hover:bg-gray-200-custom'
                   )}
                 >
                   <Icon className="h-4 w-4" strokeWidth={2} />
@@ -67,8 +67,8 @@ export function Header() {
           <div className="flex items-center gap-2 sm:gap-4">
             <ThemeToggle />
             <div className="text-right hidden sm:block">
-              <div className="text-sm font-heading font-semibold text-stone-900 dark:text-stone-100">{user.name}</div>
-              <div className="text-xs text-stone-500 dark:text-stone-400">Level {user.level}</div>
+              <div className="text-sm font-heading font-semibold text-theme-primary">{user.name}</div>
+              <div className="text-xs text-theme-tertiary">Level {user.level}</div>
             </div>
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
@@ -81,7 +81,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
+              className="md:hidden text-theme-secondary hover:text-theme-primary"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? (
@@ -95,7 +95,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-stone-200/60 dark:border-stone-800/60">
+          <nav className="md:hidden py-4 border-t border-gray-200-custom">
             <div className="flex flex-col gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -110,7 +110,7 @@ export function Header() {
                       'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all',
                       isActive
                         ? 'bg-amber-500 text-white shadow-md'
-                        : 'text-stone-600 hover:bg-stone-200/50 dark:text-stone-400 dark:hover:bg-stone-800/50'
+                        : 'text-theme-secondary hover:bg-gray-200-custom'
                     )}
                   >
                     <Icon className="h-5 w-5" strokeWidth={2} />
