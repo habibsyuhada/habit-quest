@@ -100,7 +100,8 @@ export default function TasksPage() {
           )}
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'habits' | 'dailies' | 'todos')} className="w-full">
+        {/* Mobile: Tab layout */}
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'habits' | 'dailies' | 'todos')} className="w-full lg:hidden">
           <TabsList className="grid w-full grid-cols-3 mb-6 h-auto bg-gray-200-custom p-1">
             <TabsTrigger value="habits" className="relative text-sm py-2.5 data-[state=active]:bg-theme-primary data-[state=active]:shadow-sm">
               Habits
@@ -198,6 +199,103 @@ export default function TasksPage() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Desktop: 3-column layout */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+          {/* Habits Column */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="font-heading text-xl font-bold text-theme-primary">Habits</h2>
+              {habits.length > 0 && (
+                <span className="bg-purple-100-custom text-purple-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
+                  {habits.length}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {habits.length === 0 ? (
+                <div className="text-center py-12 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary text-sm">No habits yet</p>
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {habits.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onComplete={() => completeTask(task.id)}
+                      onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
+                      onHabitAction={(direction) => completeHabit(task.id, direction)}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+
+          {/* Dailies Column */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="font-heading text-xl font-bold text-theme-primary">Dailies</h2>
+              {dailies.length > 0 && (
+                <span className="bg-sky-100-custom text-sky-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
+                  {dailies.length}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {dailies.length === 0 ? (
+                <div className="text-center py-12 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary text-sm">No dailies yet</p>
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {dailies.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onComplete={() => completeTask(task.id)}
+                      onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+
+          {/* To-Dos Column */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="font-heading text-xl font-bold text-theme-primary">To-Dos</h2>
+              {todos.length > 0 && (
+                <span className="bg-green-100-custom text-green-700-custom text-xs px-2 py-0.5 rounded-full font-semibold">
+                  {todos.length}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              {todos.length === 0 ? (
+                <div className="text-center py-12 bg-theme-primary/50 rounded-2xl border-2 border-dashed border-gray-300-custom">
+                  <p className="text-theme-tertiary text-sm">No to-dos yet</p>
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {todos.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onComplete={() => completeTask(task.id)}
+                      onDelete={() => deleteTask(task.id)}
+                      onEdit={() => handleEditTask(task)}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* Edit Task Dialog */}
         {editingTask && (
