@@ -2,6 +2,10 @@
 
 A gamified habit tracking application inspired by Habitica, built with Next.js 14, TypeScript, and shadcn/ui. Turn your life into an RPG and level up by completing real-life tasks!
 
+## 🎮 Live Demo
+
+Check out the live demo at [**habitquest.bacanovelindo.com**](https://habitquest.bacanovelindo.com)
+
 ## Features
 
 ### Core Task Management
