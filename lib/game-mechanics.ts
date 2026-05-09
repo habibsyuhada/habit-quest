@@ -1,5 +1,5 @@
-import { GAME_CONFIG } from './constants';
-import type { TaskDifficulty, User } from './types';
+import { GAME_CONFIG, CROP_DEFINITIONS, FARM_CONFIG } from './constants';
+import type { TaskDifficulty, User, CropType, GrowthStage, FarmPlot, FarmState } from './types';
 
 // Calculate XP required for a specific level
 export function calculateXPForLevel(level: number): number {
@@ -162,4 +162,39 @@ export function createDefaultUser(): Omit<User, 'id' | 'created' | 'lastLogin'> 
 // Generate unique ID
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Compute growth stage (0-5) based on elapsed time
+export function computeGrowthStage(
+  plantedAt: number,
+  growthDuration: number
+): GrowthStage {
+  const elapsedMs = Date.now() - plantedAt;
+  const elapsedSec = elapsedMs / 1000;
+  const stageDuration = growthDuration / 5;
+
+  const stage = Math.floor(elapsedSec / stageDuration);
+  return Math.min(5, Math.max(0, stage)) as GrowthStage;
+}
+
+// Get the image path for a crop at a given stage
+export function getCropImagePath(crop: CropType, stage: GrowthStage): string {
+  return `/crop/${crop}_${String(stage).padStart(2, '0')}.png`;
+}
+
+// Create the initial farm state with empty plots
+export function createInitialFarm(): FarmState {
+  const plots: FarmPlot[] = Array.from(
+    { length: FARM_CONFIG.INITIAL_PLOT_COUNT },
+    () => ({
+      id: generateId(),
+      crop: null,
+      plantedAt: null,
+    })
+  );
+
+  return {
+    plots,
+    totalHarvests: 0,
+  };
 }

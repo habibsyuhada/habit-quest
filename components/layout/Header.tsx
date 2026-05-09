@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Home, CheckSquare, ShoppingBag, User, Swords, Menu, X } from 'lucide-react';
+import { Home, CheckSquare, ShoppingBag, Sprout, Swords, Menu, X } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/tasks', label: 'Quests', icon: CheckSquare },
   { href: '/shop', label: 'Shop', icon: ShoppingBag },
-  { href: '/avatar', label: 'Hero', icon: User },
+  { href: '/farm', label: 'Farm', icon: Sprout },
 ];
 
 export function Header() {

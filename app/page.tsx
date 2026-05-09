@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { StatsBar } from '@/components/dashboard/StatsBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Swords, Trophy, Target, Zap, Sparkles } from 'lucide-react';
+import { Plus, Swords, Trophy, Target, Zap, Sparkles, Sprout } from 'lucide-react';
 import Link from 'next/link';
 import { useGameStore } from '@/lib/store';
 
@@ -140,10 +140,10 @@ export default function Home() {
                     Shop
                   </Button>
                 </Link>
-                <Link href="/avatar">
+                <Link href="/farm">
                   <Button variant="outline" className="w-full h-12 border-gray-300-custom hover:bg-gray-100-custom" size="lg">
-                    <Swords className="mr-2 h-4 w-4" />
-                    Hero
+                    <Sprout className="mr-2 h-4 w-4" />
+                    Farm
                   </Button>
                 </Link>
               </div>

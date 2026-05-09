@@ -11,8 +11,10 @@ import {
   handleDeath,
   shouldCheckDailies,
   isTodayRepeatDay,
+  computeGrowthStage,
+  createInitialFarm,
 } from './game-mechanics';
-import { GAME_CONFIG } from './constants';
+import { GAME_CONFIG, CROP_DEFINITIONS } from './constants';
 
 // Create initial state
 const createInitialState = (): GameState => ({
@@ -25,6 +27,7 @@ const createInitialState = (): GameState => ({
   tasks: [],
   rewards: [],
   lastDailyCheck: new Date().toISOString(),
+  farm: createInitialFarm(),
 });
 
 export const useGameStore = create<GameStore>()(
@@ -321,6 +324,59 @@ export const useGameStore = create<GameStore>()(
           return { rewards: updatedRewards };
         }),
 
+      // Farm Actions
+      plantCrop: (plotId, crop) =>
+        set((state) => {
+          const plot = state.farm.plots.find((p) => p.id === plotId);
+          if (!plot || plot.crop !== null) return state;
+
+          const seedCost = CROP_DEFINITIONS[crop].seedCost;
+          if (state.user.gold < seedCost) return state;
+
+          return {
+            user: { ...state.user, gold: state.user.gold - seedCost },
+            farm: {
+              ...state.farm,
+              plots: state.farm.plots.map((p) =>
+                p.id === plotId
+                  ? { ...p, crop, plantedAt: Date.now() }
+                  : p
+              ),
+            },
+          };
+        }),
+
+      harvestCrop: (plotId) =>
+        set((state) => {
+          const plot = state.farm.plots.find((p) => p.id === plotId);
+          if (!plot || plot.crop === null || plot.plantedAt === null) return state;
+
+          const cropDef = CROP_DEFINITIONS[plot.crop];
+          const stage = computeGrowthStage(plot.plantedAt, cropDef.growthDuration);
+          if (stage < 5) return state;
+
+          let newUser = { ...state.user };
+          newUser.gold += cropDef.goldReward;
+          newUser.xp += cropDef.xpReward;
+
+          if (shouldLevelUp(newUser.xp, newUser.level)) {
+            newUser = handleLevelUp(newUser);
+          }
+
+          return {
+            user: newUser,
+            farm: {
+              ...state.farm,
+              plots: state.farm.plots.map((p) =>
+                p.id === plotId
+                  ? { ...p, crop: null, plantedAt: null }
+                  : p
+              ),
+              totalHarvests: state.farm.totalHarvests + 1,
+            },
+          };
+        }),
+
       // Utility
       resetGame: () => set(createInitialState()),
 
@@ -328,7 +384,14 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'habit-quest-storage',
-      version: 1,
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as Record<string, unknown>;
+        if (version < 2) {
+          state.farm = createInitialFarm();
+        }
+        return state as unknown as GameState;
+      },
     }
   )
 );

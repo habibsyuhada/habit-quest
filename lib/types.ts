@@ -91,12 +91,28 @@ export interface Reward {
   equipped?: boolean;
 }
 
+// Farm System
+export type CropType = 'beetroot' | 'cabbage' | 'carrot' | 'cauliflower' | 'kale' | 'parsnip' | 'potato' | 'pumpkin' | 'radish' | 'sunflower' | 'wheat';
+export type GrowthStage = 0 | 1 | 2 | 3 | 4 | 5;
+
+export interface FarmPlot {
+  id: string;
+  crop: CropType | null;
+  plantedAt: number | null;
+}
+
+export interface FarmState {
+  plots: FarmPlot[];
+  totalHarvests: number;
+}
+
 // Game State
 export interface GameState {
   user: User;
   tasks: Task[];
   rewards: Reward[];
   lastDailyCheck: string;
+  farm: FarmState;
 }
 
 // Store State
@@ -121,6 +137,10 @@ export interface GameStore extends GameState {
   addReward: (reward: Omit<Reward, 'id'>) => void;
   purchaseReward: (id: string) => void;
   equipItem: (id: string) => void;
+
+  // Farm Actions
+  plantCrop: (plotId: string, crop: CropType) => void;
+  harvestCrop: (plotId: string) => void;
 
   // Utility
   resetGame: () => void;

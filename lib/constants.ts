@@ -42,6 +42,31 @@ export const GAME_CONFIG = {
   STARTING_MANA: 10,
 } as const;
 
+export const CROP_DEFINITIONS: Record<import('./types').CropType, {
+  name: string;
+  growthDuration: number;
+  goldReward: number;
+  xpReward: number;
+  seedCost: number;
+}> = {
+  wheat:        { name: 'Wheat',        growthDuration: 30,  goldReward: 3,  xpReward: 2,  seedCost: 1 },
+  radish:       { name: 'Radish',       growthDuration: 45,  goldReward: 5,  xpReward: 3,  seedCost: 2 },
+  carrot:       { name: 'Carrot',       growthDuration: 60,  goldReward: 8,  xpReward: 5,  seedCost: 3 },
+  parsnip:      { name: 'Parsnip',      growthDuration: 75,  goldReward: 10, xpReward: 6,  seedCost: 4 },
+  potato:       { name: 'Potato',       growthDuration: 90,  goldReward: 12, xpReward: 8,  seedCost: 5 },
+  beetroot:     { name: 'Beetroot',     growthDuration: 120, goldReward: 15, xpReward: 10, seedCost: 7 },
+  cabbage:      { name: 'Cabbage',      growthDuration: 150, goldReward: 18, xpReward: 12, seedCost: 9 },
+  kale:         { name: 'Kale',         growthDuration: 180, goldReward: 22, xpReward: 14, seedCost: 11 },
+  cauliflower:  { name: 'Cauliflower',  growthDuration: 225, goldReward: 28, xpReward: 18, seedCost: 14 },
+  sunflower:    { name: 'Sunflower',    growthDuration: 270, goldReward: 35, xpReward: 22, seedCost: 18 },
+  pumpkin:      { name: 'Pumpkin',      growthDuration: 300, goldReward: 45, xpReward: 30, seedCost: 25 },
+};
+
+export const FARM_CONFIG = {
+  INITIAL_PLOT_COUNT: 9,
+  POLL_INTERVAL_MS: 1000,
+} as const;
+
 export const XP_REWARDS = {
   very_easy: GAME_CONFIG.XP_VERY_EASY,
   easy: GAME_CONFIG.XP_EASY,
