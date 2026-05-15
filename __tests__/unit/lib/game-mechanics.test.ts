@@ -144,36 +144,36 @@ describe('calculateLevelProgress', () => {
 })
 
 describe('handleLevelUp', () => {
-  it('should increment level by 1', () => {
-    const user = createMockUser({ level: 1 })
+  it('should increment level by 1 when XP is sufficient', () => {
+    const user = createMockUser({ level: 1, xp: 60 })
     const leveledUp = handleLevelUp(user)
 
     expect(leveledUp.level).toBe(2)
   })
 
   it('should restore health to max', () => {
-    const user = createMockUser({ level: 1, health: 30 })
+    const user = createMockUser({ level: 1, xp: 60, health: 30 })
     const leveledUp = handleLevelUp(user)
 
     expect(leveledUp.health).toBe(leveledUp.maxHealth)
   })
 
   it('should increase max mana by 5', () => {
-    const user = createMockUser({ level: 1, maxMana: 50 })
+    const user = createMockUser({ level: 1, xp: 60, maxMana: 50 })
     const leveledUp = handleLevelUp(user)
 
     expect(leveledUp.maxMana).toBe(55)
   })
 
   it('should restore mana to new max', () => {
-    const user = createMockUser({ level: 1, mana: 10 })
+    const user = createMockUser({ level: 1, xp: 60, mana: 10 })
     const leveledUp = handleLevelUp(user)
 
     expect(leveledUp.mana).toBe(leveledUp.maxMana)
   })
 
   it('should increase all stats by 1', () => {
-    const user = createMockUser({ level: 1 })
+    const user = createMockUser({ level: 1, xp: 60 })
     const leveledUp = handleLevelUp(user)
 
     expect(leveledUp.stats.strength).toBe(2)

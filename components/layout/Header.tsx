@@ -1,13 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Home, CheckSquare, ShoppingBag, Sprout, Swords, Menu, X } from 'lucide-react';
 import { useGameStore } from '@/lib/store';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
+
+const ThemeToggle = dynamic(
+  () => import('@/components/theme-toggle').then((mod) => mod.ThemeToggle),
+  { ssr: false }
+);
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },

@@ -13,6 +13,7 @@ import {
   isTodayRepeatDay,
   computeGrowthStage,
   createInitialFarm,
+  isDirtTile,
 } from './game-mechanics';
 import { GAME_CONFIG, CROP_DEFINITIONS } from './constants';
 
@@ -325,9 +326,10 @@ export const useGameStore = create<GameStore>()(
         }),
 
       // Farm Actions
-      plantCrop: (plotId, crop) =>
+      plantCrop: (x, y, crop) =>
         set((state) => {
-          const plot = state.farm.plots.find((p) => p.id === plotId);
+          if (!isDirtTile(x, y, state.farm.dirtRect)) return state;
+          const plot = state.farm.plots.find((p) => p.x === x && p.y === y);
           if (!plot || plot.crop !== null) return state;
 
           const seedCost = CROP_DEFINITIONS[crop].seedCost;
@@ -338,7 +340,7 @@ export const useGameStore = create<GameStore>()(
             farm: {
               ...state.farm,
               plots: state.farm.plots.map((p) =>
-                p.id === plotId
+                p.x === x && p.y === y
                   ? { ...p, crop, plantedAt: Date.now() }
                   : p
               ),
@@ -346,9 +348,9 @@ export const useGameStore = create<GameStore>()(
           };
         }),
 
-      harvestCrop: (plotId) =>
+      harvestCrop: (x, y) =>
         set((state) => {
-          const plot = state.farm.plots.find((p) => p.id === plotId);
+          const plot = state.farm.plots.find((p) => p.x === x && p.y === y);
           if (!plot || plot.crop === null || plot.plantedAt === null) return state;
 
           const cropDef = CROP_DEFINITIONS[plot.crop];
@@ -368,7 +370,7 @@ export const useGameStore = create<GameStore>()(
             farm: {
               ...state.farm,
               plots: state.farm.plots.map((p) =>
-                p.id === plotId
+                p.x === x && p.y === y
                   ? { ...p, crop: null, plantedAt: null }
                   : p
               ),
@@ -384,10 +386,10 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'habit-quest-storage',
-      version: 2,
+      version: 3,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
-        if (version < 2) {
+        if (version < 3) {
           state.farm = createInitialFarm();
         }
         return state as unknown as GameState;

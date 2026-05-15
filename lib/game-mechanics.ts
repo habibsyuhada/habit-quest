@@ -1,5 +1,5 @@
-import { GAME_CONFIG, CROP_DEFINITIONS, FARM_CONFIG } from './constants';
-import type { TaskDifficulty, User, CropType, GrowthStage, FarmPlot, FarmState } from './types';
+import { GAME_CONFIG, FARM_CONFIG } from './constants';
+import type { TaskDifficulty, User, CropType, GrowthStage, FarmPlot, FarmState, FarmDirtRect } from './types';
 
 // Calculate XP required for a specific level
 export function calculateXPForLevel(level: number): number {
@@ -50,7 +50,7 @@ export function calculateLevelProgress(user: User): number {
 
 // Handle level up - supports multiple level ups at once
 export function handleLevelUp(user: User): User {
-  let newUser = { ...user };
+  const newUser = { ...user };
 
   // Keep leveling up while XP is sufficient for the next level
   while (shouldLevelUp(newUser.xp, newUser.level)) {
@@ -182,18 +182,41 @@ export function getCropImagePath(crop: CropType, stage: GrowthStage): string {
   return `/crop/${crop}_${String(stage).padStart(2, '0')}.png`;
 }
 
+export function isDirtTile(x: number, y: number, dirtRect: FarmDirtRect): boolean {
+  return x >= dirtRect.x
+    && x < dirtRect.x + dirtRect.width
+    && y >= dirtRect.y
+    && y < dirtRect.y + dirtRect.height;
+}
+
 // Create the initial farm state with empty plots
 export function createInitialFarm(): FarmState {
-  const plots: FarmPlot[] = Array.from(
-    { length: FARM_CONFIG.INITIAL_PLOT_COUNT },
-    () => ({
-      id: generateId(),
-      crop: null,
-      plantedAt: null,
-    })
-  );
+  const worldWidth = FARM_CONFIG.WORLD_WIDTH;
+  const worldHeight = FARM_CONFIG.WORLD_HEIGHT;
+  const dirtRect = {
+    x: Math.floor((worldWidth - FARM_CONFIG.DIRT_WIDTH) / 2),
+    y: Math.floor((worldHeight - FARM_CONFIG.DIRT_HEIGHT) / 2),
+    width: FARM_CONFIG.DIRT_WIDTH,
+    height: FARM_CONFIG.DIRT_HEIGHT,
+  };
+  const plots: FarmPlot[] = [];
+  for (let y = 0; y < worldHeight; y += 1) {
+    for (let x = 0; x < worldWidth; x += 1) {
+      if (isDirtTile(x, y, dirtRect)) {
+        plots.push({
+          x,
+          y,
+          crop: null,
+          plantedAt: null,
+        });
+      }
+    }
+  }
 
   return {
+    worldWidth,
+    worldHeight,
+    dirtRect,
     plots,
     totalHarvests: 0,
   };

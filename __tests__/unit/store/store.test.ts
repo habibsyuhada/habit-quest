@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '@/lib/store'
 import { createMockUser, createMockTask, createMockReward } from '@/__tests__/helpers/test-utils'
+import { createInitialFarm } from '@/lib/game-mechanics'
 
 describe('GameStore - User Actions', () => {
   beforeEach(() => {
@@ -41,7 +42,8 @@ describe('GameStore - User Actions', () => {
 
   describe('levelUp', () => {
     it('should increment user level', () => {
-      const { levelUp } = useGameStore.getState()
+      const { levelUp, updateUser } = useGameStore.getState()
+      updateUser({ xp: 60 })
 
       levelUp()
 
@@ -51,14 +53,15 @@ describe('GameStore - User Actions', () => {
     it('should restore health on level up', () => {
       const { updateUser, levelUp } = useGameStore.getState()
 
-      updateUser({ health: 30 })
+      updateUser({ xp: 60, health: 30 })
       levelUp()
 
       expect(useGameStore.getState().user.health).toBe(50) // Restored to maxHealth
     })
 
     it('should increase max mana', () => {
-      const { levelUp } = useGameStore.getState()
+      const { levelUp, updateUser } = useGameStore.getState()
+      updateUser({ xp: 60 })
 
       levelUp()
 
@@ -68,14 +71,15 @@ describe('GameStore - User Actions', () => {
     it('should restore mana to max', () => {
       const { updateUser, levelUp } = useGameStore.getState()
 
-      updateUser({ mana: 5 })
+      updateUser({ xp: 60, mana: 5 })
       levelUp()
 
       expect(useGameStore.getState().user.mana).toBe(55) // Restored to new max
     })
 
     it('should increase all stats by 1', () => {
-      const { levelUp } = useGameStore.getState()
+      const { levelUp, updateUser } = useGameStore.getState()
+      updateUser({ xp: 60 })
 
       levelUp()
 
@@ -633,6 +637,7 @@ describe('GameStore - Utility Actions', () => {
         tasks: [createMockTask()],
         rewards: [createMockReward()],
         lastDailyCheck: new Date().toISOString(),
+        farm: createInitialFarm(),
       }
 
       loadGameState(customState)

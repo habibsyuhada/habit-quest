@@ -94,14 +94,26 @@ export interface Reward {
 // Farm System
 export type CropType = 'beetroot' | 'cabbage' | 'carrot' | 'cauliflower' | 'kale' | 'parsnip' | 'potato' | 'pumpkin' | 'radish' | 'sunflower' | 'wheat';
 export type GrowthStage = 0 | 1 | 2 | 3 | 4 | 5;
+export type FarmTileType = 'grass' | 'dirt';
 
 export interface FarmPlot {
-  id: string;
+  x: number;
+  y: number;
   crop: CropType | null;
   plantedAt: number | null;
 }
 
+export interface FarmDirtRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface FarmState {
+  worldWidth: number;
+  worldHeight: number;
+  dirtRect: FarmDirtRect;
   plots: FarmPlot[];
   totalHarvests: number;
 }
@@ -139,8 +151,8 @@ export interface GameStore extends GameState {
   equipItem: (id: string) => void;
 
   // Farm Actions
-  plantCrop: (plotId: string, crop: CropType) => void;
-  harvestCrop: (plotId: string) => void;
+  plantCrop: (x: number, y: number, crop: CropType) => void;
+  harvestCrop: (x: number, y: number) => void;
 
   // Utility
   resetGame: () => void;

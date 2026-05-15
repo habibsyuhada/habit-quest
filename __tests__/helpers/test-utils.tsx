@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
 import type { User, Task, Reward, GameState } from '@/lib/types'
+import { createInitialFarm } from '@/lib/game-mechanics'
 
 // Custom render function with providers
 export function renderWithProviders(
@@ -81,6 +82,7 @@ export function createMockGameState(overrides?: Partial<GameState>): GameState {
     tasks: [],
     rewards: [],
     lastDailyCheck: new Date().toISOString(),
+    farm: createInitialFarm(),
     ...overrides,
   }
 }

@@ -63,7 +63,20 @@ export const CROP_DEFINITIONS: Record<import('./types').CropType, {
 };
 
 export const FARM_CONFIG = {
-  INITIAL_PLOT_COUNT: 9,
+  WORLD_WIDTH: 48,
+  WORLD_HEIGHT: 48,
+  DIRT_WIDTH: 46,
+  DIRT_HEIGHT: 46,
+  TILE_SIZE: 48,
+  TILESET_PATH: '/tileset/spr_tileset_sunnysideworld_16px.png',
+  TILESET_TILE_SIZE: 16,
+  TILESET_COLUMNS: 64,
+  TILESET_ROWS: 64,
+  TILE_ATLAS_STEP_PX: 48,
+  TILE_ATLAS: {
+    GRASS: { col: 1, row: 1 },
+    DIRT: { col: 3, row: 1 },
+  },
   POLL_INTERVAL_MS: 1000,
 } as const;
 
