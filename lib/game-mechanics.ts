@@ -171,10 +171,10 @@ export function computeGrowthStage(
 ): GrowthStage {
   const elapsedMs = Date.now() - plantedAt;
   const elapsedSec = elapsedMs / 1000;
-  const stageDuration = growthDuration / 5;
+  const stageDuration = growthDuration / 4;
 
   const stage = Math.floor(elapsedSec / stageDuration);
-  return Math.min(5, Math.max(0, stage)) as GrowthStage;
+  return Math.min(4, Math.max(0, stage)) as GrowthStage;
 }
 
 // Get the image path for a crop at a given stage
