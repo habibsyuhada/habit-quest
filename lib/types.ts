@@ -118,6 +118,10 @@ export interface FarmState {
   totalHarvests: number;
 }
 
+export interface InventoryState {
+  crops: Record<CropType, number>;
+}
+
 // Game State
 export interface GameState {
   user: User;
@@ -125,6 +129,7 @@ export interface GameState {
   rewards: Reward[];
   lastDailyCheck: string;
   farm: FarmState;
+  inventory: InventoryState;
 }
 
 // Store State

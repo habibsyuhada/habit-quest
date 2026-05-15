@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import { render, RenderOptions } from '@testing-library/react'
 import type { User, Task, Reward, GameState } from '@/lib/types'
 import { createInitialFarm } from '@/lib/game-mechanics'
+import { CROP_DEFINITIONS } from '@/lib/constants'
 
 // Custom render function with providers
 export function renderWithProviders(
@@ -77,12 +78,19 @@ export function createMockReward(overrides?: Partial<Reward>): Reward {
 
 // Mock game state factory
 export function createMockGameState(overrides?: Partial<GameState>): GameState {
+  const inventory = {
+    crops: Object.fromEntries(
+      Object.keys(CROP_DEFINITIONS).map((crop) => [crop, 0])
+    ) as Record<keyof typeof CROP_DEFINITIONS, number>,
+  }
+
   return {
     user: createMockUser(),
     tasks: [],
     rewards: [],
     lastDailyCheck: new Date().toISOString(),
     farm: createInitialFarm(),
+    inventory,
     ...overrides,
   }
 }

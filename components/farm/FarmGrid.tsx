@@ -5,6 +5,8 @@ import { useGameStore } from '@/lib/store';
 import { CROP_DEFINITIONS, FARM_CONFIG } from '@/lib/constants';
 import { computeGrowthStage, getCropImagePath, isDirtTile } from '@/lib/game-mechanics';
 import { HarvestAnimation } from './HarvestAnimation';
+import { CropSelector } from './CropSelector';
+import { Sprout, X, Package } from 'lucide-react';
 import type { CropType, FarmPlot, GrowthStage } from '@/lib/types';
 
 const DRAG_THRESHOLD = 6;
@@ -17,14 +19,29 @@ function getPointFromEvent(event: React.PointerEvent<HTMLDivElement>) {
   return { x: event.clientX, y: event.clientY };
 }
 
+function getTileFromTarget(target: EventTarget | null): { x: number; y: number } | null {
+  const element = target as HTMLElement | null;
+  const tileElement = element?.closest?.('[data-tile-x][data-tile-y]') as HTMLElement | null;
+  if (!tileElement) return null;
+  const xAttr = tileElement.getAttribute('data-tile-x');
+  const yAttr = tileElement.getAttribute('data-tile-y');
+  if (!xAttr || !yAttr) return null;
+  return { x: Number(xAttr), y: Number(yAttr) };
+}
+
 export function FarmGrid() {
   const farm = useGameStore((state) => state.farm);
+  const inventory = useGameStore((state) => state.inventory);
   const plantCrop = useGameStore((state) => state.plantCrop);
   const harvestCrop = useGameStore((state) => state.harvestCrop);
 
   const [tick, setTick] = useState(0);
   void tick;
-  const [selectedCrop] = useState<CropType>('wheat');
+  const userGold = useGameStore((state) => state.user.gold);
+  const [selectedCrop, setSelectedCrop] = useState<CropType | null>(null);
+  const [isSeedMenuOpen, setIsSeedMenuOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const isUiOverlayOpen = isSeedMenuOpen || isInventoryOpen;
   const [camera, setCamera] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -40,6 +57,7 @@ export function FarmGrid() {
     startPointer: { x: 0, y: 0 },
     startCamera: { x: 0, y: 0 },
     moved: false,
+    tappedTile: null as { x: number; y: number } | null,
   });
   const pinchRef = useRef({
     active: false,
@@ -118,6 +136,7 @@ export function FarmGrid() {
   }, [harvestCrop]);
 
   const handleTileClick = useCallback((x: number, y: number) => {
+    if (isUiOverlayOpen) return;
     if (!isDirtTile(x, y, farm.dirtRect)) return;
 
     const plot = plotsByCoord.get(`${x},${y}`);
@@ -131,21 +150,27 @@ export function FarmGrid() {
     if (selectedCrop) {
       plantCrop(x, y, selectedCrop);
     }
-  }, [farm.dirtRect, plotsByCoord, handleHarvest, selectedCrop, plantCrop]);
+  }, [isUiOverlayOpen, farm.dirtRect, plotsByCoord, handleHarvest, selectedCrop, plantCrop]);
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-ui-control="true"]')) return;
+    if (isUiOverlayOpen) return;
     const point = getPointFromEvent(event);
+    const tappedTile = getTileFromTarget(event.target);
     dragRef.current = {
       pointerId: event.pointerId,
       startPointer: point,
       startCamera: camera,
       moved: false,
+      tappedTile,
     };
     setIsDragging(false);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (isUiOverlayOpen) return;
     if (dragRef.current.pointerId !== event.pointerId) return;
 
     const point = getPointFromEvent(event);
@@ -202,12 +227,16 @@ export function FarmGrid() {
   }, [camera.x, camera.y, zoom, clampCamera]);
 
   const onWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (isUiOverlayOpen) return;
     event.preventDefault();
     const direction = event.deltaY > 0 ? -1 : 1;
     updateZoomAtPoint(zoom + direction * ZOOM_STEP, event.clientX, event.clientY);
   };
 
   const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-ui-control="true"]')) return;
+    if (isUiOverlayOpen) return;
     pointersRef.current.delete(event.pointerId);
     if (pointersRef.current.size < 2) {
       pinchRef.current.active = false;
@@ -221,12 +250,9 @@ export function FarmGrid() {
 
     if (moved) return;
 
-    const target = event.target as HTMLElement;
-    const xAttr = target.getAttribute('data-tile-x');
-    const yAttr = target.getAttribute('data-tile-y');
-    if (!xAttr || !yAttr) return;
-
-    handleTileClick(Number(xAttr), Number(yAttr));
+    const tappedTile = dragRef.current.tappedTile;
+    if (!tappedTile) return;
+    handleTileClick(tappedTile.x, tappedTile.y);
   };
 
   const onPointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -249,12 +275,14 @@ export function FarmGrid() {
   }, []);
 
   const onPointerDownEnhanced = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (isUiOverlayOpen) return;
     const point = getPointFromEvent(event);
     pointersRef.current.set(event.pointerId, point);
     onPointerDown(event);
   };
 
   const onPointerMoveEnhanced = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (isUiOverlayOpen) return;
     const point = getPointFromEvent(event);
     pointersRef.current.set(event.pointerId, point);
 
@@ -302,6 +330,12 @@ export function FarmGrid() {
     };
   }, [camera.x, camera.y, zoom, tileSize, viewportSize.width, viewportSize.height, farm.worldWidth, farm.worldHeight]);
 
+  const harvestedItems = useMemo(() => {
+    return (Object.entries(inventory.crops) as [CropType, number][])
+      .filter(([, count]) => count > 0)
+      .sort((a, b) => b[1] - a[1]);
+  }, [inventory.crops]);
+
   return (
     <>
       <div
@@ -313,11 +347,103 @@ export function FarmGrid() {
         onPointerCancel={onPointerCancel}
         onWheel={onWheel}
       >
+        {isSeedMenuOpen && (
+          <div
+            data-ui-control="true"
+            className="absolute inset-0 z-30 bg-black/35"
+            onClick={() => setIsSeedMenuOpen(false)}
+          />
+        )}
+
         <div
           className="absolute top-3 left-3 z-20 rounded-full bg-black/50 text-white px-3 py-1 text-xs"
         >
           {selectedCrop ? `Seed: ${CROP_DEFINITIONS[selectedCrop].name}` : 'Seed: none'}
         </div>
+        <button
+          data-ui-control="true"
+          type="button"
+          className="absolute bottom-4 right-4 z-40 rounded-full bg-emerald-600 text-white shadow-lg px-4 py-3 inline-flex items-center gap-2"
+          onClick={() => setIsSeedMenuOpen((open) => !open)}
+        >
+          <Sprout className="h-4 w-4" />
+          Seed
+        </button>
+        <button
+          data-ui-control="true"
+          type="button"
+          className="absolute bottom-4 right-[110px] z-40 rounded-full bg-sky-600 text-white shadow-lg px-4 py-3 inline-flex items-center gap-2"
+          onClick={() => setIsInventoryOpen((open) => !open)}
+        >
+          <Package className="h-4 w-4" />
+          Bag
+        </button>
+
+        {isSeedMenuOpen && (
+          <div
+            data-ui-control="true"
+            className="absolute bottom-0 left-0 right-0 z-50 bg-theme-primary/95 backdrop-blur-md border-t border-stone-300/60 dark:border-stone-700/60 rounded-t-2xl p-4 max-h-[58vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-heading text-lg text-theme-primary">Select Seed</h3>
+              <button
+                data-ui-control="true"
+                type="button"
+                className="rounded-full p-1.5 bg-stone-200/70 dark:bg-stone-800/70 text-theme-primary"
+                onClick={() => setIsSeedMenuOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <CropSelector
+              selectedCrop={selectedCrop}
+              onSelectCrop={(crop) => {
+                setSelectedCrop(crop);
+                setIsSeedMenuOpen(false);
+              }}
+              userGold={userGold}
+            />
+          </div>
+        )}
+
+        {isInventoryOpen && (
+          <div
+            data-ui-control="true"
+            className="absolute right-4 bottom-[74px] z-50 w-[290px] max-h-[50vh] overflow-y-auto rounded-2xl border border-stone-300/60 dark:border-stone-700/60 bg-theme-primary/95 backdrop-blur-md p-3"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-heading text-base text-theme-primary">Inventory</h3>
+              <button
+                data-ui-control="true"
+                type="button"
+                className="rounded-full p-1.5 bg-stone-200/70 dark:bg-stone-800/70 text-theme-primary"
+                onClick={() => setIsInventoryOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {harvestedItems.length === 0 ? (
+              <p className="text-xs text-theme-secondary">Belum ada hasil panen.</p>
+            ) : (
+              <div className="space-y-2">
+                {harvestedItems.map(([crop, count]) => (
+                  <div key={crop} className="flex items-center justify-between rounded-xl bg-stone-100/80 dark:bg-stone-800/60 p-2">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={getCropImagePath(crop, 5)}
+                        alt={CROP_DEFINITIONS[crop].name}
+                        className="h-8 w-8 object-contain"
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                      <span className="text-sm text-theme-primary">{CROP_DEFINITIONS[crop].name}</span>
+                    </div>
+                    <span className="text-sm font-bold text-amber-600-custom">x{count}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div
           className="relative"

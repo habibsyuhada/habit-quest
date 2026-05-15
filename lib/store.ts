@@ -16,6 +16,15 @@ import {
   isDirtTile,
 } from './game-mechanics';
 import { GAME_CONFIG, CROP_DEFINITIONS } from './constants';
+import type { CropType } from './types';
+
+const createInitialInventory = () => {
+  const crops = {} as Record<CropType, number>;
+  (Object.keys(CROP_DEFINITIONS) as CropType[]).forEach((crop) => {
+    crops[crop] = 0;
+  });
+  return { crops };
+};
 
 // Create initial state
 const createInitialState = (): GameState => ({
@@ -29,6 +38,7 @@ const createInitialState = (): GameState => ({
   rewards: [],
   lastDailyCheck: new Date().toISOString(),
   farm: createInitialFarm(),
+  inventory: createInitialInventory(),
 });
 
 export const useGameStore = create<GameStore>()(
@@ -376,6 +386,12 @@ export const useGameStore = create<GameStore>()(
               ),
               totalHarvests: state.farm.totalHarvests + 1,
             },
+            inventory: {
+              crops: {
+                ...state.inventory.crops,
+                [plot.crop]: (state.inventory.crops[plot.crop] ?? 0) + 1,
+              },
+            },
           };
         }),
 
@@ -386,11 +402,14 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: 'habit-quest-storage',
-      version: 3,
+      version: 4,
       migrate: (persistedState: unknown, version: number) => {
         const state = persistedState as Record<string, unknown>;
         if (version < 3) {
           state.farm = createInitialFarm();
+        }
+        if (version < 4) {
+          state.inventory = createInitialInventory();
         }
         return state as unknown as GameState;
       },

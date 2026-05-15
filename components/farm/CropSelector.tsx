@@ -15,18 +15,23 @@ interface CropSelectorProps {
 
 export function CropSelector({ selectedCrop, onSelectCrop, userGold }: CropSelectorProps) {
   return (
-    <div className="mt-4 sm:mt-6">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-heading text-lg sm:text-xl text-theme-primary">Select Seed</h2>
-        {selectedCrop && (
-          <button
-            type="button"
-            className="text-xs px-2.5 py-1 rounded-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
-            onClick={() => onSelectCrop(null)}
-          >
-            Clear
-          </button>
-        )}
+    <div>
+      <div className="mb-3">
+        <Card
+          className={cn(
+            'border-stone-200/60 dark:border-stone-800/60 bg-white/70 dark:bg-stone-900/50 backdrop-blur-sm transition-all duration-200 cursor-pointer p-3',
+            selectedCrop === null && 'ring-2 ring-emerald-500 border-emerald-500'
+          )}
+          onClick={() => onSelectCrop(null)}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">No Seed</p>
+              <p className="text-xs text-stone-500 dark:text-stone-400">Do not plant on empty dirt tiles.</p>
+            </div>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Free</span>
+          </div>
+        </Card>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
         {(Object.entries(CROP_DEFINITIONS) as [CropType, typeof CROP_DEFINITIONS[CropType]][]).map(
@@ -51,10 +56,10 @@ export function CropSelector({ selectedCrop, onSelectCrop, userGold }: CropSelec
               >
                 <div className="flex flex-col items-center gap-2">
                   <img
-                    src={getCropImagePath(crop, 5)}
+                    src={getCropImagePath(crop, 0)}
                     alt={def.name}
                     style={{ imageRendering: 'pixelated' }}
-                    className="w-12 h-12 object-contain"
+                    className="w-9 h-9 object-contain"
                   />
                   <span className="text-xs sm:text-sm font-semibold text-stone-900 dark:text-stone-100">
                     {def.name}

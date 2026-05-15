@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '@/lib/store'
 import { createMockUser, createMockTask, createMockReward } from '@/__tests__/helpers/test-utils'
 import { createInitialFarm } from '@/lib/game-mechanics'
+import { CROP_DEFINITIONS } from '@/lib/constants'
 
 describe('GameStore - User Actions', () => {
   beforeEach(() => {
@@ -638,6 +639,11 @@ describe('GameStore - Utility Actions', () => {
         rewards: [createMockReward()],
         lastDailyCheck: new Date().toISOString(),
         farm: createInitialFarm(),
+        inventory: {
+          crops: Object.fromEntries(
+            Object.keys(CROP_DEFINITIONS).map((crop) => [crop, 0])
+          ) as Record<keyof typeof CROP_DEFINITIONS, number>,
+        },
       }
 
       loadGameState(customState)
@@ -648,5 +654,38 @@ describe('GameStore - Utility Actions', () => {
       expect(state.tasks).toHaveLength(1)
       expect(state.rewards).toHaveLength(1)
     })
+  })
+})
+
+describe('GameStore - Farm Inventory', () => {
+  beforeEach(() => {
+    const { resetGame } = useGameStore.getState()
+    resetGame()
+  })
+
+  it('should add harvested crop to inventory', () => {
+    const { updateUser, plantCrop, harvestCrop } = useGameStore.getState()
+    updateUser({ gold: 100 })
+
+    const state = useGameStore.getState()
+    const plot = state.farm.plots[0]
+    if (!plot) throw new Error('Expected at least one farm plot')
+
+    plantCrop(plot.x, plot.y, 'wheat')
+
+    useGameStore.setState((current) => ({
+      farm: {
+        ...current.farm,
+        plots: current.farm.plots.map((p) =>
+          p.x === plot.x && p.y === plot.y
+            ? { ...p, plantedAt: Date.now() - CROP_DEFINITIONS.wheat.growthDuration * 1000 }
+            : p
+        ),
+      },
+    }))
+
+    harvestCrop(plot.x, plot.y)
+
+    expect(useGameStore.getState().inventory.crops.wheat).toBe(1)
   })
 })
